@@ -3,6 +3,7 @@ import path from "path";
 import { randomBytes } from "crypto";
 import type { EventDump, EventItem, EventStatus } from "./site";
 import { slugify } from "./site";
+import bundledEvents from "../../data/events.json";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const EVENTS_FILE = path.join(DATA_DIR, "events.json");
@@ -37,29 +38,32 @@ const SEED: EventItem[] = [
   },
 ];
 
-async function ensureStore() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  try {
-    await fs.access(EVENTS_FILE);
-    const raw = await fs.readFile(EVENTS_FILE, "utf8");
-    const parsed = JSON.parse(raw) as EventItem[];
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      await fs.writeFile(EVENTS_FILE, JSON.stringify(SEED, null, 2), "utf8");
-    }
-  } catch {
-    await fs.writeFile(EVENTS_FILE, JSON.stringify(SEED, null, 2), "utf8");
-  }
+function fallbackEvents(): EventItem[] {
+  const bundled = bundledEvents as EventItem[];
+  if (Array.isArray(bundled) && bundled.length > 0) return bundled;
+  return SEED;
 }
 
 export async function readEvents(): Promise<EventItem[]> {
-  await ensureStore();
-  const raw = await fs.readFile(EVENTS_FILE, "utf8");
-  return JSON.parse(raw) as EventItem[];
+  try {
+    const raw = await fs.readFile(EVENTS_FILE, "utf8");
+    const parsed = JSON.parse(raw) as EventItem[];
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+  } catch {
+    // Missing file or read-only serverless FS — use bundled seed.
+  }
+  return fallbackEvents();
 }
 
 async function writeEvents(list: EventItem[]) {
-  await ensureStore();
-  await fs.writeFile(EVENTS_FILE, JSON.stringify(list, null, 2), "utf8");
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(EVENTS_FILE, JSON.stringify(list, null, 2), "utf8");
+  } catch {
+    throw new Error(
+      "Event storage is read-only on this host. Use local admin or add a database.",
+    );
+  }
 }
 
 export async function getEventById(id: string) {

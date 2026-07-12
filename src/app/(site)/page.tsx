@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden atmosphere grain text-foam sm:min-h-[calc(100svh-5.5rem)]">
+      <section className="relative flex min-h-[80svh] flex-col overflow-hidden atmosphere grain text-foam sm:min-h-[calc(100svh-5.5rem)]">
         <div
           className="pointer-events-none absolute inset-0 animate-drift opacity-70"
           style={{
@@ -46,11 +46,12 @@ export default async function HomePage() {
               "radial-gradient(circle at 70% 40%, rgba(121,7,32,0.4), transparent 42%), radial-gradient(circle at 20% 70%, rgba(31,111,115,0.35), transparent 40%)",
           }}
         />
-        <div className="section-pad relative mx-auto flex max-w-6xl flex-col justify-start pb-16 pt-14 sm:min-h-[calc(100svh-5.5rem)] sm:justify-end sm:pb-20 sm:pt-10">
+        <div className="section-pad relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-start pb-16 pt-8 sm:justify-end sm:pb-20 sm:pt-12">
+          <div className="h-16 shrink-0 sm:hidden" aria-hidden />
           <p className="animate-rise text-sm uppercase tracking-[0.28em] text-sand/90">
             {SITE.corridor}
           </p>
-          <h1 className="animate-rise-delay-1 font-display mt-4 max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] leading-[0.9] font-bold">
+          <h1 className="animate-rise-delay-1 font-display mt-5 max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] leading-[0.9] font-bold">
             Link Circle
             <span aria-hidden className="ml-[0.12em]">
               ⭕️

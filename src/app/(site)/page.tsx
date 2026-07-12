@@ -47,7 +47,7 @@ export default async function HomePage() {
           }}
         />
         <div className="section-pad relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-start pb-16 pt-8 sm:justify-end sm:pb-20 sm:pt-12">
-          <div className="h-16 shrink-0 sm:hidden" aria-hidden />
+          <div className="h-24 shrink-0 sm:hidden" aria-hidden />
           <p className="animate-rise text-sm uppercase tracking-[0.28em] text-sand/90">
             {SITE.corridor}
           </p>

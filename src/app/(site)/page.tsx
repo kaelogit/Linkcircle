@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative min-h-[100svh] overflow-hidden atmosphere grain text-foam">
+      <section className="relative overflow-hidden atmosphere grain text-foam sm:min-h-[calc(100svh-5.5rem)]">
         <div
           className="pointer-events-none absolute inset-0 animate-drift opacity-70"
           style={{
@@ -46,21 +46,21 @@ export default async function HomePage() {
               "radial-gradient(circle at 70% 40%, rgba(121,7,32,0.4), transparent 42%), radial-gradient(circle at 20% 70%, rgba(31,111,115,0.35), transparent 40%)",
           }}
         />
-        <div className="section-pad relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end pb-16 pt-10 sm:pb-20">
+        <div className="section-pad relative mx-auto flex max-w-6xl flex-col justify-start pb-14 pt-8 sm:min-h-[calc(100svh-5.5rem)] sm:justify-end sm:pb-20 sm:pt-10">
           <p className="animate-rise text-sm uppercase tracking-[0.28em] text-sand/90">
             {SITE.corridor}
           </p>
-          <h1 className="animate-rise-delay-1 font-display mt-4 max-w-4xl text-[clamp(3.2rem,10vw,7.5rem)] leading-[0.9] font-bold">
+          <h1 className="animate-rise-delay-1 font-display mt-3 max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] leading-[0.9] font-bold sm:mt-4">
             Link Circle
             <span aria-hidden className="ml-[0.12em]">
               ⭕️
             </span>
           </h1>
-          <p className="animate-rise-delay-2 mt-6 max-w-xl text-base text-foam/80 sm:text-xl">
+          <p className="animate-rise-delay-2 mt-4 max-w-xl text-base text-foam/80 sm:mt-6 sm:text-xl">
             {SITE.tagline} Real connections, weekly rhythm, marketplace energy,
             and hangouts that turn strangers into circle.
           </p>
-          <div className="animate-rise-delay-3 mt-8 flex flex-wrap gap-3 sm:mt-10">
+          <div className="animate-rise-delay-3 mt-7 flex flex-wrap gap-3 sm:mt-10">
             <Link
               href="/join"
               className="rounded-full bg-sunset px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sunset-deep"
@@ -74,7 +74,7 @@ export default async function HomePage() {
               See events
             </Link>
           </div>
-          <div className="mt-10 flex items-center gap-3 text-sm text-foam/55 sm:mt-14">
+          <div className="mt-8 flex items-center gap-3 text-sm text-foam/55 sm:mt-14">
             <span className="h-2 w-2 animate-pulse-soft rounded-full bg-sunset" />
             Growing every day along {SITE.corridor}
           </div>

@@ -182,7 +182,7 @@ export const COORDINATORS: Coordinator[] = [
   },
   {
     id: "admin-ebuka",
-    name: "Ebuka Elvis",
+    name: "Chukwuebuka Elvis",
     alias: "Cruiz_Kvng",
     role: "Community Manager",
     bio: "Passionate about building meaningful relationships, fostering engagement, and creating a thriving community. As the Community Manager of Link Circle, I am committed to ensuring every member feels welcomed, valued, and connected while driving conversations, collaboration, and opportunities that help our community grow.",
@@ -195,7 +195,7 @@ export const COORDINATORS: Coordinator[] = [
   },
   {
     id: "admin-aaliyah",
-    name: "Aaliyah The Law",
+    name: "Mohammed Aalliyah Kaaka",
     role: "Legal Adviser & Chief Whip",
     bio: "Passionate about leadership, justice, and community building. I serve as the Legal Adviser and Chief Whip of Link Circle, where I work to uphold our values, promote accountability, and foster unity among members.",
     quote:

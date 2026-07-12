@@ -215,7 +215,7 @@ export const COORDINATORS: Coordinator[] = [
     isFounder: false,
     initials: "FH",
     accent: "#3a9a9e",
-    // photo: "/team/fehintade-habibat.png",
+    photo: "/team/fehintade-habibat.png",
   },
   {
     id: "admin-barakat",

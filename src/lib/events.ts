@@ -1,12 +1,10 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { randomBytes } from "crypto";
 import type { EventDump, EventItem, EventStatus } from "./site";
 import { slugify } from "./site";
 import bundledEvents from "../../data/events.json";
+import { readJsonFile, writeJsonFile } from "./json-store";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const EVENTS_FILE = path.join(DATA_DIR, "events.json");
+const FILENAME = "events.json";
 
 const SEED: EventItem[] = [
   {
@@ -38,6 +36,8 @@ const SEED: EventItem[] = [
   },
 ];
 
+let memory: EventItem[] | null = null;
+
 function fallbackEvents(): EventItem[] {
   const bundled = bundledEvents as EventItem[];
   if (Array.isArray(bundled) && bundled.length > 0) return bundled;
@@ -45,25 +45,18 @@ function fallbackEvents(): EventItem[] {
 }
 
 export async function readEvents(): Promise<EventItem[]> {
-  try {
-    const raw = await fs.readFile(EVENTS_FILE, "utf8");
-    const parsed = JSON.parse(raw) as EventItem[];
-    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-  } catch {
-    // Missing file or read-only serverless FS — use bundled seed.
-  }
-  return fallbackEvents();
+  if (memory) return memory;
+  const fromDisk = await readJsonFile<EventItem[]>(FILENAME, fallbackEvents());
+  memory =
+    Array.isArray(fromDisk) && fromDisk.length > 0
+      ? fromDisk
+      : fallbackEvents();
+  return memory;
 }
 
 async function writeEvents(list: EventItem[]) {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.writeFile(EVENTS_FILE, JSON.stringify(list, null, 2), "utf8");
-  } catch {
-    throw new Error(
-      "Event storage is read-only on this host. Use local admin or add a database.",
-    );
-  }
+  memory = list;
+  await writeJsonFile(FILENAME, list);
 }
 
 export async function getEventById(id: string) {

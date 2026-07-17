@@ -1,34 +1,28 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { randomBytes } from "crypto";
 import type { Participant, PaymentStatus } from "./site";
 import { getEventById } from "./events";
 import bundledParticipants from "../../data/participants.json";
+import { readJsonFile, writeJsonFile } from "./json-store";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const PARTICIPANTS_FILE = path.join(DATA_DIR, "participants.json");
+const FILENAME = "participants.json";
+
+let memory: Participant[] | null = null;
+
+function bundled(): Participant[] {
+  const data = bundledParticipants as Participant[];
+  return Array.isArray(data) ? data : [];
+}
 
 export async function readParticipants(): Promise<Participant[]> {
-  try {
-    const raw = await fs.readFile(PARTICIPANTS_FILE, "utf8");
-    const parsed = JSON.parse(raw) as Participant[];
-    if (Array.isArray(parsed)) return parsed;
-  } catch {
-    // Missing file or read-only serverless FS.
-  }
-  const bundled = bundledParticipants as Participant[];
-  return Array.isArray(bundled) ? bundled : [];
+  if (memory) return memory;
+  const fromDisk = await readJsonFile<Participant[]>(FILENAME, bundled());
+  memory = Array.isArray(fromDisk) ? fromDisk : bundled();
+  return memory;
 }
 
 async function writeParticipants(list: Participant[]) {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.writeFile(PARTICIPANTS_FILE, JSON.stringify(list, null, 2), "utf8");
-  } catch {
-    throw new Error(
-      "Participant storage is read-only on this host. Use local admin or add a database.",
-    );
-  }
+  memory = list;
+  await writeJsonFile(FILENAME, list);
 }
 
 export function createPassToken() {

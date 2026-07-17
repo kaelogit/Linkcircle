@@ -65,8 +65,29 @@ function ParticipantsInner() {
           paymentStatus: "paid",
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
+      const text = await res.text();
+      let data: {
+        error?: string;
+        passUrl?: string;
+        participant?: Participant;
+      } = {};
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(
+            res.ok
+              ? "Unexpected server response"
+              : `Server error (${res.status}). Try again or use local admin.`,
+          );
+        }
+      }
+      if (!res.ok) {
+        throw new Error(data.error || `Failed (${res.status})`);
+      }
+      if (!data.participant || !data.passUrl) {
+        throw new Error("Pass was not created. Try again.");
+      }
       setPassUrl(data.passUrl);
       setLastCreated(data.participant);
       setFullName("");

@@ -100,9 +100,10 @@ export async function sharePassToWhatsApp(
   }
 
   // Desktop / fallback: download QR + open WhatsApp with write-up + link
+  // Use phone for wa.me (whatsapp field is username, not a number)
   downloadQr(file);
   window.open(
-    whatsappShareUrl(message, participant.whatsapp || participant.phone),
+    whatsappShareUrl(message, participant.phone),
     "_blank",
     "noopener,noreferrer"
   );

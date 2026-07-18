@@ -61,7 +61,7 @@ function ParticipantsInner() {
           eventId,
           fullName,
           phone,
-          whatsapp: whatsapp || phone,
+          whatsapp: whatsapp || undefined,
           paymentStatus: "paid",
         }),
       });
@@ -164,12 +164,14 @@ function ParticipantsInner() {
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
           />
 
-          <label className="mt-4 block text-sm text-white/45">WhatsApp</label>
+          <label className="mt-4 block text-sm text-white/45">
+            WhatsApp username
+          </label>
           <input
             value={whatsapp}
             onChange={(e) => setWhatsapp(e.target.value)}
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
-            placeholder="Optional"
+            placeholder="Optional · e.g. @name"
           />
 
           <button
@@ -228,6 +230,11 @@ function ParticipantsInner() {
                   <div>
                     <p className="font-medium">{p.fullName}</p>
                     <p className="text-sm text-white/45">{p.phone}</p>
+                    {p.whatsapp && (
+                      <p className="text-sm text-white/35">
+                        WhatsApp: {p.whatsapp}
+                      </p>
+                    )}
                   </div>
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs ${

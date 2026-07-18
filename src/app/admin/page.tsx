@@ -52,7 +52,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Link
           href="/admin/events"
           className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
@@ -69,6 +69,15 @@ export default function AdminDashboard() {
           <p className="font-display text-xl">Participants</p>
           <p className="mt-2 text-sm text-white/50">
             Add people who paid in group chat and share pass links.
+          </p>
+        </Link>
+        <Link
+          href="/admin/members"
+          className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
+        >
+          <p className="font-display text-xl">Directory</p>
+          <p className="mt-2 text-sm text-white/50">
+            All members + photos. Event guests sync here automatically.
           </p>
         </Link>
         <Link

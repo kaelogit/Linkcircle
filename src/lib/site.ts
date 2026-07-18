@@ -46,6 +46,21 @@ export type Participant = {
   createdAt: string;
 };
 
+export type MemberSource = "manual" | "event";
+
+export type Member = {
+  id: string;
+  fullName: string;
+  phone: string;
+  phoneKey: string;
+  whatsapp?: string;
+  photoUrl?: string;
+  bio: string;
+  source: MemberSource;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Coordinator = {
   id: string;
   name: string;

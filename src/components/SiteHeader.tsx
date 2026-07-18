@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/weekly", label: "Weekly" },
   { href: "/marketplace", label: "Marketplace" },
   { href: "/events", label: "Events" },
+  { href: "/directory", label: "Directory" },
   { href: "/coordinators", label: "People" },
 ];
 

@@ -2,6 +2,8 @@ import type {
   EventDump,
   EventItem,
   EventStatus,
+  Member,
+  MemberSource,
   Participant,
   PaymentStatus,
 } from "./site";
@@ -116,5 +118,48 @@ export function participantToRow(p: Participant): ParticipantRow {
     checked_in_at: p.checkedInAt,
     revoked_at: p.revokedAt,
     created_at: p.createdAt,
+  };
+}
+
+export type MemberRow = {
+  id: string;
+  full_name: string;
+  phone: string;
+  phone_key: string;
+  whatsapp: string | null;
+  photo_url: string | null;
+  bio: string;
+  source: MemberSource;
+  created_at: string;
+  updated_at: string;
+};
+
+export function memberFromRow(row: MemberRow): Member {
+  return {
+    id: row.id,
+    fullName: row.full_name,
+    phone: row.phone,
+    phoneKey: row.phone_key,
+    whatsapp: row.whatsapp ?? undefined,
+    photoUrl: row.photo_url ?? undefined,
+    bio: row.bio ?? "",
+    source: row.source,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function memberToRow(m: Member): MemberRow {
+  return {
+    id: m.id,
+    full_name: m.fullName,
+    phone: m.phone,
+    phone_key: m.phoneKey,
+    whatsapp: m.whatsapp ?? null,
+    photo_url: m.photoUrl ?? null,
+    bio: m.bio,
+    source: m.source,
+    created_at: m.createdAt,
+    updated_at: m.updatedAt,
   };
 }

@@ -35,6 +35,9 @@ export function SiteFooter() {
               <Link href="/events">Events</Link>
             </li>
             <li>
+              <Link href="/directory">Directory</Link>
+            </li>
+            <li>
               <Link href="/coordinators">Founder & admins</Link>
             </li>
           </ul>

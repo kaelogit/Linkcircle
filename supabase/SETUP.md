@@ -14,8 +14,11 @@ Open **SQL → New query** and run these files **in order**:
 
 1. `migrations/001_create_events_participants.sql`
 2. `migrations/002_seed_events.sql`
+3. `migrations/003_create_members.sql` (members directory + `member-photos` storage bucket)
 
 You should see Beach Hangout + House Party after seeding.
+
+If the Storage policy step fails in SQL, create a public bucket named `member-photos` under **Storage** in the dashboard instead.
 
 ## 3. Copy API keys
 

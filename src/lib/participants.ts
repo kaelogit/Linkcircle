@@ -73,12 +73,23 @@ export async function addParticipant(input: {
     if (error) {
       throw new Error(`Failed to create participant: ${error.message}`);
     }
-    return participant;
+  } else {
+    const list = await readParticipantsLocal();
+    list.push(participant);
+    await writeParticipantsLocal(list);
   }
 
-  const list = await readParticipantsLocal();
-  list.push(participant);
-  await writeParticipantsLocal(list);
+  try {
+    const { ensureMemberFromParticipant } = await import("./members");
+    await ensureMemberFromParticipant({
+      fullName: participant.fullName,
+      phone: participant.phone,
+      whatsapp: participant.whatsapp,
+    });
+  } catch (err) {
+    console.error("Failed to sync member directory:", err);
+  }
+
   return participant;
 }
 

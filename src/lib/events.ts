@@ -3,6 +3,12 @@ import type { EventDump, EventItem, EventStatus } from "./site";
 import { slugify } from "./site";
 import bundledEvents from "../../data/events.json";
 import { readJsonFile, writeJsonFile } from "./json-store";
+import { isSupabaseConfigured, getSupabaseAdmin } from "./supabase";
+import {
+  eventFromRow,
+  eventToRow,
+  type EventRow,
+} from "./supabase-map";
 
 const FILENAME = "events.json";
 
@@ -36,36 +42,65 @@ const SEED: EventItem[] = [
   },
 ];
 
-let memory: EventItem[] | null = null;
-
 function fallbackEvents(): EventItem[] {
   const bundled = bundledEvents as EventItem[];
   if (Array.isArray(bundled) && bundled.length > 0) return bundled;
   return SEED;
 }
 
-export async function readEvents(): Promise<EventItem[]> {
-  if (memory) return memory;
+async function readEventsLocal(): Promise<EventItem[]> {
   const fromDisk = await readJsonFile<EventItem[]>(FILENAME, fallbackEvents());
-  memory =
-    Array.isArray(fromDisk) && fromDisk.length > 0
-      ? fromDisk
-      : fallbackEvents();
-  return memory;
+  return Array.isArray(fromDisk) && fromDisk.length > 0
+    ? fromDisk
+    : fallbackEvents();
 }
 
-async function writeEvents(list: EventItem[]) {
-  memory = list;
+async function writeEventsLocal(list: EventItem[]) {
   await writeJsonFile(FILENAME, list);
 }
 
+async function readEventsDb(): Promise<EventItem[]> {
+  const sb = getSupabaseAdmin();
+  const { data, error } = await sb
+    .from("events")
+    .select("*")
+    .order("starts_at", { ascending: false });
+  if (error) throw new Error(`Failed to load events: ${error.message}`);
+  return (data as EventRow[]).map(eventFromRow);
+}
+
+export async function readEvents(): Promise<EventItem[]> {
+  if (isSupabaseConfigured()) return readEventsDb();
+  return readEventsLocal();
+}
+
 export async function getEventById(id: string) {
-  const list = await readEvents();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("events")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(`Failed to load event: ${error.message}`);
+    return data ? eventFromRow(data as EventRow) : null;
+  }
+  const list = await readEventsLocal();
   return list.find((e) => e.id === id) ?? null;
 }
 
 export async function getEventBySlug(slug: string) {
-  const list = await readEvents();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("events")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) throw new Error(`Failed to load event: ${error.message}`);
+    return data ? eventFromRow(data as EventRow) : null;
+  }
+  const list = await readEventsLocal();
   return list.find((e) => e.slug === slug) ?? null;
 }
 
@@ -164,16 +199,23 @@ export async function createEvent(input: EventInput) {
     createdAt: now,
     updatedAt: now,
   };
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { error } = await sb.from("events").insert(eventToRow(event));
+    if (error) throw new Error(`Failed to create event: ${error.message}`);
+    return event;
+  }
+
   list.unshift(event);
-  await writeEvents(list);
+  await writeEventsLocal(list);
   return event;
 }
 
 export async function updateEvent(id: string, patch: Partial<EventInput>) {
+  const current = await getEventById(id);
+  if (!current) return null;
   const list = await readEvents();
-  const index = list.findIndex((e) => e.id === id);
-  if (index === -1) return null;
-  const current = list[index];
   const nextTitle = patch.title?.trim() || current.title;
   const updated: EventItem = {
     ...current,
@@ -210,16 +252,36 @@ export async function updateEvent(id: string, patch: Partial<EventInput>) {
         : current.slug,
     updatedAt: new Date().toISOString(),
   };
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const row = eventToRow(updated);
+    const { error } = await sb.from("events").update(row).eq("id", id);
+    if (error) throw new Error(`Failed to update event: ${error.message}`);
+    return updated;
+  }
+
+  const index = list.findIndex((e) => e.id === id);
+  if (index === -1) return null;
   list[index] = updated;
-  await writeEvents(list);
+  await writeEventsLocal(list);
   return updated;
 }
 
 export async function deleteEvent(id: string) {
-  const list = await readEvents();
+  if (isSupabaseConfigured()) {
+    const existing = await getEventById(id);
+    if (!existing) return false;
+    const sb = getSupabaseAdmin();
+    const { error } = await sb.from("events").delete().eq("id", id);
+    if (error) throw new Error(`Failed to delete event: ${error.message}`);
+    return true;
+  }
+
+  const list = await readEventsLocal();
   const next = list.filter((e) => e.id !== id);
   if (next.length === list.length) return false;
-  await writeEvents(next);
+  await writeEventsLocal(next);
   return true;
 }
 
@@ -230,9 +292,8 @@ export async function addDump(
     createdAt?: string;
   },
 ) {
-  const list = await readEvents();
-  const index = list.findIndex((e) => e.id === eventId);
-  if (index === -1) return null;
+  const current = await getEventById(eventId);
+  if (!current) return null;
   const item: EventDump = {
     id: dump.id ?? `dump_${randomBytes(6).toString("hex")}`,
     url: dump.url,
@@ -240,18 +301,53 @@ export async function addDump(
     type: dump.type ?? "image",
     createdAt: dump.createdAt ?? new Date().toISOString(),
   };
-  list[index].dumps.unshift(item);
-  list[index].updatedAt = new Date().toISOString();
-  await writeEvents(list);
+  const nextDumps = [item, ...current.dumps];
+  const updatedAt = new Date().toISOString();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("events")
+      .update({ dumps: nextDumps, updated_at: updatedAt })
+      .eq("id", eventId)
+      .select("*")
+      .single();
+    if (error) throw new Error(`Failed to add dump: ${error.message}`);
+    return { event: eventFromRow(data as EventRow), dump: item };
+  }
+
+  const list = await readEventsLocal();
+  const index = list.findIndex((e) => e.id === eventId);
+  if (index === -1) return null;
+  list[index].dumps = nextDumps;
+  list[index].updatedAt = updatedAt;
+  await writeEventsLocal(list);
   return { event: list[index], dump: item };
 }
 
 export async function removeDump(eventId: string, dumpId: string) {
-  const list = await readEvents();
+  const current = await getEventById(eventId);
+  if (!current) return null;
+  const nextDumps = current.dumps.filter((d) => d.id !== dumpId);
+  const updatedAt = new Date().toISOString();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("events")
+      .update({ dumps: nextDumps, updated_at: updatedAt })
+      .eq("id", eventId)
+      .select("*")
+      .single();
+    if (error) throw new Error(`Failed to remove dump: ${error.message}`);
+    return eventFromRow(data as EventRow);
+  }
+
+  const list = await readEventsLocal();
   const index = list.findIndex((e) => e.id === eventId);
   if (index === -1) return null;
-  list[index].dumps = list[index].dumps.filter((d) => d.id !== dumpId);
-  list[index].updatedAt = new Date().toISOString();
-  await writeEvents(list);
+  list[index].dumps = nextDumps;
+  list[index].updatedAt = updatedAt;
+  await writeEventsLocal(list);
   return list[index];
 }

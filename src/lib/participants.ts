@@ -3,26 +3,42 @@ import type { Participant, PaymentStatus } from "./site";
 import { getEventById } from "./events";
 import bundledParticipants from "../../data/participants.json";
 import { readJsonFile, writeJsonFile } from "./json-store";
+import { isSupabaseConfigured, getSupabaseAdmin } from "./supabase";
+import {
+  participantFromRow,
+  participantToRow,
+  type ParticipantRow,
+} from "./supabase-map";
 
 const FILENAME = "participants.json";
-
-let memory: Participant[] | null = null;
 
 function bundled(): Participant[] {
   const data = bundledParticipants as Participant[];
   return Array.isArray(data) ? data : [];
 }
 
-export async function readParticipants(): Promise<Participant[]> {
-  if (memory) return memory;
+async function readParticipantsLocal(): Promise<Participant[]> {
   const fromDisk = await readJsonFile<Participant[]>(FILENAME, bundled());
-  memory = Array.isArray(fromDisk) ? fromDisk : bundled();
-  return memory;
+  return Array.isArray(fromDisk) ? fromDisk : bundled();
 }
 
-async function writeParticipants(list: Participant[]) {
-  memory = list;
+async function writeParticipantsLocal(list: Participant[]) {
   await writeJsonFile(FILENAME, list);
+}
+
+export async function readParticipants(): Promise<Participant[]> {
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("participants")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      throw new Error(`Failed to load participants: ${error.message}`);
+    }
+    return (data as ParticipantRow[]).map(participantFromRow);
+  }
+  return readParticipantsLocal();
 }
 
 export function createPassToken() {
@@ -36,7 +52,6 @@ export async function addParticipant(input: {
   whatsapp?: string;
   paymentStatus?: PaymentStatus;
 }) {
-  const list = await readParticipants();
   const participant: Participant = {
     id: `p_${randomBytes(8).toString("hex")}`,
     eventId: input.eventId,
@@ -49,27 +64,80 @@ export async function addParticipant(input: {
     revokedAt: null,
     createdAt: new Date().toISOString(),
   };
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { error } = await sb
+      .from("participants")
+      .insert(participantToRow(participant));
+    if (error) {
+      throw new Error(`Failed to create participant: ${error.message}`);
+    }
+    return participant;
+  }
+
+  const list = await readParticipantsLocal();
   list.push(participant);
-  await writeParticipants(list);
+  await writeParticipantsLocal(list);
   return participant;
 }
 
 export async function getParticipantByToken(token: string) {
-  const list = await readParticipants();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("participants")
+      .select("*")
+      .eq("pass_token", token)
+      .maybeSingle();
+    if (error) {
+      throw new Error(`Failed to load pass: ${error.message}`);
+    }
+    return data ? participantFromRow(data as ParticipantRow) : null;
+  }
+  const list = await readParticipantsLocal();
   return list.find((p) => p.passToken === token) ?? null;
 }
 
 export async function getParticipantsByEvent(eventId: string) {
-  const list = await readParticipants();
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("participants")
+      .select("*")
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: false });
+    if (error) {
+      throw new Error(`Failed to load participants: ${error.message}`);
+    }
+    return (data as ParticipantRow[]).map(participantFromRow);
+  }
+  const list = await readParticipantsLocal();
   return list.filter((p) => p.eventId === eventId);
 }
 
 export async function revokeParticipant(id: string) {
-  const list = await readParticipants();
+  const revokedAt = new Date().toISOString();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("participants")
+      .update({ revoked_at: revokedAt })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+    if (error) {
+      throw new Error(`Failed to revoke participant: ${error.message}`);
+    }
+    return data ? participantFromRow(data as ParticipantRow) : null;
+  }
+
+  const list = await readParticipantsLocal();
   const index = list.findIndex((p) => p.id === id);
   if (index === -1) return null;
-  list[index].revokedAt = new Date().toISOString();
-  await writeParticipants(list);
+  list[index].revokedAt = revokedAt;
+  await writeParticipantsLocal(list);
   return list[index];
 }
 
@@ -81,13 +149,10 @@ export async function checkInByToken(
   token: string,
   expectedEventId?: string,
 ): Promise<CheckInResult> {
-  const list = await readParticipants();
-  const index = list.findIndex((p) => p.passToken === token);
-  if (index === -1) {
+  const participant = await getParticipantByToken(token);
+  if (!participant) {
     return { ok: false, code: "not_found", message: "Pass not found." };
   }
-
-  const participant = list[index];
 
   if (participant.revokedAt) {
     return {
@@ -138,13 +203,60 @@ export async function checkInByToken(
     };
   }
 
-  participant.checkedInAt = new Date().toISOString();
-  list[index] = participant;
-  await writeParticipants(list);
+  const checkedInAt = new Date().toISOString();
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { data, error } = await sb
+      .from("participants")
+      .update({ checked_in_at: checkedInAt })
+      .eq("id", participant.id)
+      .is("checked_in_at", null)
+      .select("*")
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Failed to check in: ${error.message}`);
+    }
+    if (!data) {
+      const again = await getParticipantByToken(token);
+      return {
+        ok: false,
+        code: "already_used",
+        message: again?.checkedInAt
+          ? `Already checked in at ${new Date(again.checkedInAt).toLocaleString()}.`
+          : "Already checked in.",
+        participant: again ?? participant,
+      };
+    }
+
+    const updated = participantFromRow(data as ParticipantRow);
+    return {
+      ok: true,
+      participant: updated,
+      message: `Welcome to Link Circle, ${updated.fullName}`,
+    };
+  }
+
+  const list = await readParticipantsLocal();
+  const index = list.findIndex((p) => p.passToken === token);
+  if (index === -1) {
+    return { ok: false, code: "not_found", message: "Pass not found." };
+  }
+  if (list[index].checkedInAt) {
+    return {
+      ok: false,
+      code: "already_used",
+      message: `Already checked in at ${new Date(list[index].checkedInAt!).toLocaleString()}.`,
+      participant: list[index],
+    };
+  }
+  list[index].checkedInAt = checkedInAt;
+  await writeParticipantsLocal(list);
 
   return {
     ok: true,
-    participant,
-    message: `Welcome to Link Circle, ${participant.fullName}`,
+    participant: list[index],
+    message: `Welcome to Link Circle, ${list[index].fullName}`,
   };
 }

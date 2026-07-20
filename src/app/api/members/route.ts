@@ -64,10 +64,12 @@ export async function PATCH(request: Request) {
       );
     }
     const member = await updateMember(String(body.id), {
-      fullName: body.fullName,
-      phone: body.phone,
-      whatsapp: body.whatsapp,
-      bio: body.bio,
+      fullName:
+        body.fullName !== undefined ? String(body.fullName) : undefined,
+      phone: body.phone !== undefined ? String(body.phone) : undefined,
+      whatsapp:
+        body.whatsapp !== undefined ? String(body.whatsapp) : undefined,
+      bio: body.bio !== undefined ? String(body.bio) : undefined,
       photoUrl: body.photoUrl,
     });
     if (!member) {

@@ -55,6 +55,11 @@ export default async function DirectoryPage() {
                 <h2 className="font-display mt-3 text-base leading-snug sm:text-lg">
                   {m.fullName}
                 </h2>
+                {m.bio ? (
+                  <p className="mt-1 line-clamp-3 text-sm text-ink-soft">
+                    {m.bio}
+                  </p>
+                ) : null}
               </article>
             ))}
           </div>

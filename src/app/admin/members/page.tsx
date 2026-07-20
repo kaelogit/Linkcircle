@@ -3,12 +3,24 @@
 import { useEffect, useState } from "react";
 import type { Member } from "@/lib/site";
 
+type Draft = {
+  fullName: string;
+  phone: string;
+  whatsapp: string;
+  bio: string;
+};
+
+const emptyDraft: Draft = {
+  fullName: "",
+  phone: "",
+  whatsapp: "",
+  bio: "",
+};
+
 export default function AdminMembersPage() {
   const [list, setList] = useState<Member[]>([]);
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [bio, setBio] = useState("");
+  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
@@ -23,24 +35,48 @@ export default function AdminMembersPage() {
     void load();
   }, []);
 
-  async function addMember(e: React.FormEvent) {
+  function startEdit(m: Member) {
+    setEditingId(m.id);
+    setDraft({
+      fullName: m.fullName,
+      phone: m.phone,
+      whatsapp: m.whatsapp ?? "",
+      bio: m.bio ?? "",
+    });
+    setMessage(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setDraft(emptyDraft);
+  }
+
+  async function saveMember(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setMessage(null);
     try {
+      const payload = {
+        fullName: draft.fullName,
+        phone: draft.phone,
+        whatsapp: draft.whatsapp || undefined,
+        bio: draft.bio,
+      };
+
       const res = await fetch("/api/members", {
-        method: "POST",
+        method: editingId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, phone, whatsapp, bio }),
+        body: JSON.stringify(
+          editingId ? { id: editingId, ...payload } : payload,
+        ),
       });
       const text = await res.text();
       const data = text ? JSON.parse(text) : {};
       if (!res.ok) throw new Error(data.error || "Failed");
-      setFullName("");
-      setPhone("");
-      setWhatsapp("");
-      setBio("");
-      setMessage(`Added ${data.fullName}`);
+      setMessage(
+        editingId ? `Updated ${data.fullName}` : `Added ${data.fullName}`,
+      );
+      cancelEdit();
       await load();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Failed");
@@ -54,6 +90,7 @@ export default function AdminMembersPage() {
     await fetch(`/api/members?id=${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
+    if (editingId === id) cancelEdit();
     await load();
   }
 
@@ -92,24 +129,39 @@ export default function AdminMembersPage() {
 
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <form
-          onSubmit={addMember}
+          onSubmit={saveMember}
           className="rounded-2xl border border-white/10 bg-[#12181c] p-5"
         >
-          <h2 className="font-display text-xl">Add member</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-xl">
+              {editingId ? "Edit member" : "Add member"}
+            </h2>
+            {editingId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="text-sm text-white/45 hover:text-white"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
 
           <label className="mt-4 block text-sm text-white/45">Full name</label>
           <input
             required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            value={draft.fullName}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, fullName: e.target.value }))
+            }
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
           />
 
           <label className="mt-4 block text-sm text-white/45">Phone</label>
           <input
             required
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={draft.phone}
+            onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
           />
 
@@ -117,17 +169,19 @@ export default function AdminMembersPage() {
             WhatsApp username
           </label>
           <input
-            value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
+            value={draft.whatsapp}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, whatsapp: e.target.value }))
+            }
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
             placeholder="Optional · e.g. @name"
           />
 
           <label className="mt-4 block text-sm text-white/45">Bio</label>
           <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            rows={3}
+            value={draft.bio}
+            onChange={(e) => setDraft((d) => ({ ...d, bio: e.target.value }))}
+            rows={4}
             className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-3"
             placeholder="Optional"
           />
@@ -137,7 +191,11 @@ export default function AdminMembersPage() {
             disabled={busy}
             className="mt-6 w-full rounded-full bg-white py-3 text-sm font-semibold text-[#0f1417]"
           >
-            {busy ? "Saving…" : "Add to directory"}
+            {busy
+              ? "Saving…"
+              : editingId
+                ? "Save changes"
+                : "Add to directory"}
           </button>
           {message && <p className="mt-4 text-sm text-white/55">{message}</p>}
         </form>
@@ -154,7 +212,11 @@ export default function AdminMembersPage() {
             {list.map((m) => (
               <div
                 key={m.id}
-                className="flex gap-4 rounded-xl border border-white/10 px-4 py-3"
+                className={`flex gap-4 rounded-xl border px-4 py-3 ${
+                  editingId === m.id
+                    ? "border-[#790720]/60 bg-[#790720]/10"
+                    : "border-white/10"
+                }`}
               >
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-white/5">
                   {m.photoUrl ? (
@@ -176,10 +238,19 @@ export default function AdminMembersPage() {
                   {m.whatsapp && (
                     <p className="text-sm text-white/35">WA: {m.whatsapp}</p>
                   )}
-                  <p className="mt-1 text-xs uppercase tracking-wider text-white/30">
-                    {m.source === "event" ? "From event" : "Manual"}
-                  </p>
+                  {m.bio && (
+                    <p className="mt-1 line-clamp-2 text-sm text-white/40">
+                      {m.bio}
+                    </p>
+                  )}
                   <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(m)}
+                      className="text-[#3a9a9e] underline"
+                    >
+                      Edit
+                    </button>
                     <label className="cursor-pointer text-[#3a9a9e] underline">
                       {uploadingId === m.id ? "Uploading…" : "Upload photo"}
                       <input

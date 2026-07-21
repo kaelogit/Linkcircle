@@ -81,6 +81,15 @@ export default function AdminDashboard() {
           </p>
         </Link>
         <Link
+          href="/admin/coordinators"
+          className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
+        >
+          <p className="font-display text-xl">People</p>
+          <p className="mt-2 text-sm text-white/50">
+            Manage founder &amp; admin team shown on the People page.
+          </p>
+        </Link>
+        <Link
           href="/admin/scan"
           className="rounded-2xl border border-white/10 bg-[#790720] p-5 text-white"
         >

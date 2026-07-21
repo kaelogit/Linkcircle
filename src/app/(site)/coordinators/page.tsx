@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { COORDINATORS } from "@/lib/site";
+import { readCoordinators } from "@/lib/coordinators";
 
 export const metadata: Metadata = {
   title: "Founder & Admins",
 };
 
-export default function CoordinatorsPage() {
-  const founder = COORDINATORS.find((c) => c.isFounder);
-  const admins = COORDINATORS.filter((c) => !c.isFounder);
+export const dynamic = "force-dynamic";
+
+export default async function CoordinatorsPage() {
+  const all = await readCoordinators();
+  const founder = all.find((c) => c.isFounder);
+  const admins = all.filter((c) => !c.isFounder);
 
   return (
     <div className="pt-8 sm:pt-12">
@@ -69,7 +72,7 @@ export default function CoordinatorsPage() {
                 </p>
                 {founder.quote ? (
                   <blockquote className="mt-8 border-l-2 border-sand/50 pl-5 text-foam/70 italic">
-                    “{founder.quote}”
+                    &ldquo;{founder.quote}&rdquo;
                   </blockquote>
                 ) : (
                   <p className="mt-8 text-sm text-foam/40">
@@ -119,7 +122,7 @@ export default function CoordinatorsPage() {
               <p className="mt-3 text-sm text-ink-soft">{person.bio}</p>
               {person.quote && (
                 <p className="mt-3 text-sm italic text-ink/55">
-                  “{person.quote}”
+                  &ldquo;{person.quote}&rdquo;
                 </p>
               )}
             </article>

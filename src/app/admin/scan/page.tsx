@@ -50,6 +50,16 @@ export default function AdminScanPage() {
     };
   }, []);
 
+  async function stopCamera() {
+    try {
+      await scannerRef.current?.stop();
+    } catch {
+      // already stopped
+    }
+    scannerRef.current = null;
+    setScanning(false);
+  }
+
   const processToken = useCallback(
     async (raw: string) => {
       if (lockRef.current) return;
@@ -62,6 +72,10 @@ export default function AdminScanPage() {
           body: JSON.stringify({ eventId: eventId || undefined }),
         });
         const data = await res.json();
+
+        // Stop the camera immediately so the result is obvious
+        await stopCamera();
+
         if (!res.ok || !data.ok) {
           setState({
             kind: "error",
@@ -75,13 +89,13 @@ export default function AdminScanPage() {
           });
         }
       } catch {
+        await stopCamera();
         setState({ kind: "error", message: "Network error. Try again." });
       } finally {
-        setTimeout(() => {
-          lockRef.current = false;
-        }, 1800);
+        lockRef.current = false;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [eventId],
   );
 
@@ -100,10 +114,78 @@ export default function AdminScanPage() {
     );
   }
 
-  async function stopScan() {
-    await scannerRef.current?.stop().catch(() => undefined);
-    scannerRef.current = null;
-    setScanning(false);
+  function dismiss() {
+    setState({ kind: "idle" });
+  }
+
+  // Fullscreen result overlay
+  if (state.kind === "success" || state.kind === "error") {
+    const isOk = state.kind === "success";
+    return (
+      <div
+        className={`fixed inset-0 z-[999] flex flex-col items-center justify-center p-8 ${
+          isOk ? "bg-emerald-900/95" : "bg-red-900/95"
+        }`}
+      >
+        <div className="animate-rise text-center">
+          <div
+            className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full ${
+              isOk ? "bg-emerald-500/30" : "bg-red-500/30"
+            }`}
+          >
+            {isOk ? (
+              <svg
+                viewBox="0 0 24 24"
+                className="h-14 w-14 text-emerald-300"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                className="h-14 w-14 text-red-300"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            )}
+          </div>
+
+          <p className="mt-6 text-sm uppercase tracking-[0.25em] text-white/70">
+            {isOk ? "Access granted" : "Access denied"}
+          </p>
+
+          {state.kind === "success" && (
+            <p className="mt-4 font-display text-4xl text-white sm:text-5xl">
+              {state.name}
+            </p>
+          )}
+
+          <p className="mt-4 text-xl text-white/80">{state.message}</p>
+
+          <button
+            type="button"
+            onClick={dismiss}
+            className={`mt-10 rounded-full px-10 py-4 text-lg font-semibold ${
+              isOk
+                ? "bg-emerald-500 text-emerald-950"
+                : "bg-red-500 text-red-950"
+            }`}
+          >
+            Scan next
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -147,7 +229,7 @@ export default function AdminScanPage() {
         ) : (
           <button
             type="button"
-            onClick={stopScan}
+            onClick={stopCamera}
             className="flex-1 rounded-full border border-white/25 py-3 text-sm font-semibold"
           >
             Stop camera
@@ -175,25 +257,6 @@ export default function AdminScanPage() {
           Check in
         </button>
       </form>
-
-      {state.kind === "success" && (
-        <div className="animate-rise rounded-2xl bg-emerald-500/20 px-6 py-8 text-center ring-1 ring-emerald-400/40">
-          <p className="text-sm uppercase tracking-[0.2em] text-emerald-200">
-            Access granted
-          </p>
-          <p className="mt-3 font-display text-3xl">{state.name}</p>
-          <p className="mt-3 text-lg text-emerald-50">{state.message}</p>
-        </div>
-      )}
-
-      {state.kind === "error" && (
-        <div className="animate-rise rounded-2xl bg-red-500/20 px-6 py-8 text-center ring-1 ring-red-400/40">
-          <p className="text-sm uppercase tracking-[0.2em] text-red-200">
-            Access denied
-          </p>
-          <p className="mt-3 text-lg">{state.message}</p>
-        </div>
-      )}
     </div>
   );
 }

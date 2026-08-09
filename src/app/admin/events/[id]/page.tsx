@@ -65,20 +65,85 @@ export default function AdminEventDetailPage() {
     setBusy(true);
     setMessage(null);
     try {
-      const form = new FormData();
-      files.forEach((f) => form.append("file", f));
-      form.append("caption", caption);
-      const res = await fetch(`/api/events/${id}/dumps`, {
-        method: "POST",
-        body: form,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-      setEvent(data.event);
+      let eventData: EventItem | null = null;
+      let count = 0;
+
+      for (const file of files) {
+        setMessage(`Uploading ${file.name}… (${count + 1}/${files.length})`);
+
+        // Prefer direct-to-Storage upload (works for large videos on Vercel)
+        const prep = await fetch(`/api/events/${id}/dumps/upload-url`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type || "application/octet-stream",
+            size: file.size,
+          }),
+        });
+
+        if (prep.ok) {
+          const slot = await prep.json();
+          const put = await fetch(slot.signedUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type || "application/octet-stream",
+              "x-upsert": "true",
+            },
+            body: file,
+          });
+          if (!put.ok) {
+            throw new Error(
+              `Storage rejected ${file.name}. Create the event-dumps bucket in Supabase (migration 007).`,
+            );
+          }
+
+          const confirm = await fetch(`/api/events/${id}/dumps`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              url: slot.publicUrl,
+              type: slot.type,
+              caption:
+                files.length === 1 ? caption : caption || file.name,
+            }),
+          });
+          const data = await confirm.json();
+          if (!confirm.ok) throw new Error(data.error || "Failed to save dump");
+          eventData = data.event;
+          count += 1;
+          continue;
+        }
+
+        // Fallback: multipart through the API (local / small files)
+        const prepErr = await prep.json().catch(() => ({} as { error?: string }));
+        const form = new FormData();
+        form.append("file", file);
+        form.append(
+          "caption",
+          files.length === 1 ? caption : caption || file.name,
+        );
+        const res = await fetch(`/api/events/${id}/dumps`, {
+          method: "POST",
+          body: form,
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(
+            data.error ||
+              prepErr.error ||
+              "Upload failed. Run migration 007 for event-dumps storage.",
+          );
+        }
+        eventData = data.event;
+        count += data.dumps?.length ?? 1;
+      }
+
+      if (eventData) setEvent(eventData);
       setFiles([]);
       setCaption("");
       setMessage(
-        `${data.dumps?.length ?? 1} file(s) uploaded. Live on homepage & event page.`,
+        `${count} file(s) uploaded. Photos & videos are live on the homepage & event page.`,
       );
     } catch (err) {
       setMessage(err instanceof Error ? err.message : "Upload failed");
@@ -230,7 +295,8 @@ export default function AdminEventDetailPage() {
         <h2 className="font-display text-xl">Event dumps</h2>
         <p className="mt-2 text-sm text-white/45">
           Upload photos and videos from the hangout. Visitors see them on the
-          homepage and this event&apos;s public page.
+          homepage and this event&apos;s public page. Videos: mp4/webm/mov, up
+          to 100&nbsp;MB each (compress longer clips first).
         </p>
         <form
           onSubmit={uploadDump}

@@ -4,26 +4,15 @@ import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { addDump, removeDump } from "@/lib/events";
+import {
+  createDumpUploadUrl,
+  mediaKindFromName,
+  MAX_DUMP_BYTES,
+  uploadDumpBytes,
+} from "@/lib/dump-storage";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 type Ctx = { params: Promise<{ id: string }> };
-
-const IMAGE_EXT = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".gif",
-  ".webp",
-  ".avif",
-  ".heic",
-]);
-const VIDEO_EXT = new Set([".mp4", ".webm", ".mov", ".m4v", ".ogg"]);
-
-function mediaKind(file: File): "image" | "video" | null {
-  const ext = path.extname(file.name).toLowerCase();
-  if (file.type.startsWith("video/") || VIDEO_EXT.has(ext)) return "video";
-  if (file.type.startsWith("image/") || IMAGE_EXT.has(ext)) return "image";
-  return null;
-}
 
 export async function POST(request: Request, context: Ctx) {
   if (!(await isAdminAuthenticated())) {
@@ -31,57 +20,127 @@ export async function POST(request: Request, context: Ctx) {
   }
 
   const { id } = await context.params;
-  const form = await request.formData();
-  const caption = String(form.get("caption") ?? "");
+  const contentType = request.headers.get("content-type") || "";
 
-  const files = form
-    .getAll("file")
-    .filter((f): f is File => f instanceof File && f.size > 0);
-
-  if (files.length === 0) {
-    return NextResponse.json(
-      { error: "At least one photo or video is required" },
-      { status: 400 },
-    );
+  // JSON: register a dump after client uploaded via signed URL
+  if (contentType.includes("application/json")) {
+    try {
+      const body = await request.json();
+      const url = String(body.url ?? "").trim();
+      const type =
+        body.type === "video" || body.type === "image" ? body.type : undefined;
+      const caption = String(body.caption ?? "");
+      if (!url) {
+        return NextResponse.json({ error: "url is required" }, { status: 400 });
+      }
+      const kind =
+        type ??
+        mediaKindFromName(url, "") ??
+        ("image" as const);
+      const result = await addDump(id, {
+        url,
+        caption,
+        type: kind,
+      });
+      if (!result) {
+        return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      }
+      return NextResponse.json(
+        { event: result.event, dumps: [result.dump] },
+        { status: 201 },
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed";
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
   }
 
-  const dir = path.join(process.cwd(), "public", "uploads", "dumps");
-  await fs.mkdir(dir, { recursive: true });
+  // Multipart: upload file(s) server-side (Supabase Storage, or local disk)
+  try {
+    const form = await request.formData();
+    const caption = String(form.get("caption") ?? "");
+    const files = form
+      .getAll("file")
+      .filter((f): f is File => f instanceof File && f.size > 0);
 
-  const uploaded = [];
-  let event = null;
-
-  for (const file of files) {
-    const kind = mediaKind(file);
-    if (!kind) {
+    if (files.length === 0) {
       return NextResponse.json(
-        {
-          error: `Unsupported file: ${file.name}. Use images (jpg/png/webp) or videos (mp4/webm/mov).`,
-        },
+        { error: "At least one photo or video is required" },
         { status: 400 },
       );
     }
 
-    const ext = path.extname(file.name) || (kind === "video" ? ".mp4" : ".jpg");
-    const filename = `${Date.now()}_${randomBytes(4).toString("hex")}${ext}`;
-    const bytes = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(path.join(dir, filename), bytes);
-
-    const result = await addDump(id, {
-      url: `/uploads/dumps/${filename}`,
-      caption: files.length === 1 ? caption : caption || file.name,
-      type: kind,
-    });
-
-    if (!result) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    for (const file of files) {
+      if (file.size > MAX_DUMP_BYTES) {
+        return NextResponse.json(
+          {
+            error: `${file.name} is too large (max 100 MB). Compress videos first.`,
+          },
+          { status: 400 },
+        );
+      }
     }
 
-    uploaded.push(result.dump);
-    event = result.event;
-  }
+    const uploaded = [];
+    let event = null;
 
-  return NextResponse.json({ event, dumps: uploaded }, { status: 201 });
+    for (const file of files) {
+      const kind = mediaKindFromName(file.name, file.type);
+      if (!kind) {
+        return NextResponse.json(
+          {
+            error: `Unsupported file: ${file.name}. Use images (jpg/png/webp) or videos (mp4/webm/mov).`,
+          },
+          { status: 400 },
+        );
+      }
+
+      let url: string;
+
+      if (isSupabaseConfigured()) {
+        const bytes = Buffer.from(await file.arrayBuffer());
+        const stored = await uploadDumpBytes(id, {
+          name: file.name,
+          type: file.type,
+          bytes,
+        });
+        if (!stored) {
+          return NextResponse.json(
+            { error: "Upload to storage failed" },
+            { status: 500 },
+          );
+        }
+        url = stored.publicUrl;
+      } else {
+        const dir = path.join(process.cwd(), "public", "uploads", "dumps");
+        await fs.mkdir(dir, { recursive: true });
+        const ext =
+          path.extname(file.name) || (kind === "video" ? ".mp4" : ".jpg");
+        const filename = `${Date.now()}_${randomBytes(4).toString("hex")}${ext}`;
+        const bytes = Buffer.from(await file.arrayBuffer());
+        await fs.writeFile(path.join(dir, filename), bytes);
+        url = `/uploads/dumps/${filename}`;
+      }
+
+      const result = await addDump(id, {
+        url,
+        caption: files.length === 1 ? caption : caption || file.name,
+        type: kind,
+      });
+
+      if (!result) {
+        return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      }
+
+      uploaded.push(result.dump);
+      event = result.event;
+    }
+
+    return NextResponse.json({ event, dumps: uploaded }, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function DELETE(request: Request, context: Ctx) {

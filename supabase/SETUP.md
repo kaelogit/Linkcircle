@@ -15,10 +15,13 @@ Open **SQL → New query** and run these files **in order**:
 1. `migrations/001_create_events_participants.sql`
 2. `migrations/002_seed_events.sql`
 3. `migrations/003_create_members.sql` (members directory + `member-photos` storage bucket)
+4. `migrations/004_create_coordinators.sql` + `005_seed_coordinators.sql`
+5. `migrations/006_house_party_ended.sql` (marks House Party as past)
+6. `migrations/007_event_dumps_storage.sql` (**required** for photo/video dump uploads on Vercel)
 
 You should see Beach Hangout + House Party after seeding.
 
-If the Storage policy step fails in SQL, create a public bucket named `member-photos` under **Storage** in the dashboard instead.
+If a Storage policy step fails in SQL, create the public bucket in the dashboard instead (`member-photos` and/or `event-dumps`).
 
 ## 3. Copy API keys
 

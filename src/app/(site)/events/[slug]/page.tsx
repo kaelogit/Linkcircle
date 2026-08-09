@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DumpGallery } from "@/components/DumpGallery";
-import { getEventBySlug } from "@/lib/events";
+import { getEventBySlug, getUpcomingEvents } from "@/lib/events";
 import { formatEventRange, isUpcomingStatus } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -21,14 +21,29 @@ export default async function EventDetailPage({ params }: Props) {
   if (!event) notFound();
 
   const isUpcoming = isUpcomingStatus(event.status);
+  const paragraphs = event.description
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const upcoming = isUpcoming ? await getUpcomingEvents() : [];
+  const sibling = upcoming.find((e) => e.id !== event.id);
 
   return (
     <div className="pt-8 sm:pt-12">
       <section
-        className="section-pad mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] text-foam sm:rounded-[2rem]"
+        className="section-pad relative mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] text-foam sm:rounded-[2rem]"
         style={{ background: event.coverGradient }}
       >
-        <div className="px-6 py-10 sm:px-12 sm:py-14">
+        {event.coverImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={event.coverImage}
+            alt=""
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
+          />
+        )}
+        <div className="relative px-6 py-10 sm:px-12 sm:py-14">
           <p className="text-sm uppercase tracking-[0.2em] text-white/70">
             {isUpcoming ? "Upcoming" : "Past hangout"} ·{" "}
             {formatEventRange(event.startsAt, event.endsAt)}
@@ -36,7 +51,7 @@ export default async function EventDetailPage({ params }: Props) {
           <h1 className="font-display mt-4 max-w-3xl text-4xl sm:text-6xl">
             {event.title}
           </h1>
-          <p className="mt-4 max-w-xl text-base text-white/85 sm:text-lg">
+          <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
             {event.tagline}
           </p>
         </div>
@@ -47,13 +62,21 @@ export default async function EventDetailPage({ params }: Props) {
           <h2 className="font-display text-2xl">
             {isUpcoming ? "About this event" : "How it went"}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-ink-soft sm:text-lg">
-            {event.description}
-          </p>
+          <div className="mt-4 space-y-4 text-base leading-relaxed text-ink-soft sm:text-lg">
+            {paragraphs.map((p) => (
+              <p key={p.slice(0, 48)}>{p}</p>
+            ))}
+          </div>
+
+          {event.galleryNote && (
+            <p className="mt-8 rounded-2xl border border-ink/10 bg-mist px-5 py-4 text-sm text-ink-soft">
+              {event.galleryNote}
+            </p>
+          )}
 
           {isUpcoming && event.whatsIncluded.length > 0 && (
             <>
-              <h3 className="font-display mt-10 text-xl">What you get</h3>
+              <h3 className="font-display mt-10 text-xl">What you walk into</h3>
               <ul className="mt-4 space-y-3 text-ink-soft">
                 {event.whatsIncluded.map((item) => (
                   <li key={item} className="flex gap-3">
@@ -63,6 +86,27 @@ export default async function EventDetailPage({ params }: Props) {
                 ))}
               </ul>
             </>
+          )}
+
+          {sibling && (
+            <div className="mt-10 overflow-hidden rounded-[1.5rem] border border-ink/10">
+              <div
+                className="px-6 py-7 text-foam"
+                style={{ background: sibling.coverGradient }}
+              >
+                <p className="text-xs uppercase tracking-[0.18em] text-white/65">
+                  Same weekend
+                </p>
+                <h3 className="font-display mt-2 text-2xl">{sibling.title}</h3>
+                <p className="mt-2 text-sm text-white/80">{sibling.tagline}</p>
+                <Link
+                  href={`/events/${sibling.slug}`}
+                  className="mt-5 inline-flex text-sm font-semibold underline-offset-4 hover:underline"
+                >
+                  View {sibling.title} →
+                </Link>
+              </div>
+            </div>
           )}
 
           {event.dumps.length > 0 ? (
@@ -130,14 +174,14 @@ export default async function EventDetailPage({ params }: Props) {
           {isUpcoming ? (
             <div className="mt-8 space-y-3">
               <p className="text-sm text-ink-soft">
-                Pay via admins in the group chat → get your unique QR pass +
-                link. One scan at the door. Can&apos;t be reused.
+                More details and registration links will be shared by the
+                admins. Join the circle so you don&apos;t miss the drop.
               </p>
               <Link
                 href="/join"
                 className="block rounded-full bg-sunset py-3 text-center text-sm font-semibold text-white"
               >
-                Ask admins to book
+                Ask admins / Join first
               </Link>
             </div>
           ) : (

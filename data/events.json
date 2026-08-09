@@ -153,5 +153,56 @@
     "dumps": [],
     "createdAt": "2026-07-11T00:00:00.000Z",
     "updatedAt": "2026-08-09T00:00:00.000Z"
+  },
+  {
+    "id": "evt_networking_picnic_0829",
+    "slug": "networking-picnic-aug-29",
+    "title": "Networking Picnic",
+    "tagline": "Conversations under the open sky. EQ that changes how you connect.",
+    "description": "Saturday, 29th August is for the people who want more than small talk. Link Circle is hosting a Networking Picnic — an outdoor afternoon built for meaningful conversations, new faces, and real relationships along the Ajah → Eleko corridor.\n\nAt the heart of the day: a guest session with Adetoun Irukera (Mrs) on Emotional Intelligence (EQ): A Key Ingredient to Successful Relationships. Expect practical insights you can use immediately — how you listen, how you show up, and how you build trust with people who matter.\n\nCome ready to meet new people, exchange ideas, and grow together. Soft energy. Strong connections. One amazing community.",
+    "startsAt": "2026-08-29T10:00:00+01:00",
+    "endsAt": "2026-08-29T17:00:00+01:00",
+    "locationPublic": "Ajah → Eleko (exact picnic spot shared by admins)",
+    "priceLabel": "Details & registration via admins",
+    "capacity": 40,
+    "coverGradient": "linear-gradient(145deg, #1a2e24 0%, #2d4a3a 28%, #790720 72%, #d4a24a 100%)",
+    "coverImage": "/events/weekend-aug-2026.png",
+    "status": "upcoming",
+    "whatsIncluded": [
+      "Outdoor networking picnic with Link Circle members",
+      "Guest speaker session with Adetoun Irukera (Mrs)",
+      "Theme deep-dive: Emotional Intelligence (EQ) for stronger relationships",
+      "Space to meet new people, exchange ideas & grow together",
+      "Registration & venue details shared by admins"
+    ],
+    "galleryNote": "Two days. Two experiences. One community — then Sunday’s Mixed Football Games.",
+    "dumps": [],
+    "createdAt": "2026-08-09T16:00:00.000Z",
+    "updatedAt": "2026-08-09T16:00:00.000Z"
+  },
+  {
+    "id": "evt_mixed_football_0830",
+    "slug": "mixed-football-aug-30",
+    "title": "Mixed Football Games",
+    "tagline": "Males & females. One pitch. Who sabi play ball pass?",
+    "description": "Sunday, 30th August is pure Link Circle energy on the grass. Mixed Football Games — males and females mixed in teams — built for competition, connection, banter, and good vibes.\n\nAll skill levels welcome. Whether you came to score, assist, or just enjoy the chaos, show up ready to play. Teamwork. Respect. Fun. Come prove yourself, laugh hard, and leave knowing the circle a little better.\n\nThis is Day Two of the weekend: after Saturday’s Networking Picnic, we close it out with boots on, hearts open, and rivalries friendly. Network. Grow. Belong — then go again on Sunday.",
+    "startsAt": "2026-08-30T15:00:00+01:00",
+    "endsAt": "2026-08-30T19:00:00+01:00",
+    "locationPublic": "Ajah → Eleko (pitch details from admins)",
+    "priceLabel": "Details & registration via admins",
+    "capacity": 40,
+    "coverGradient": "linear-gradient(145deg, #0b1418 0%, #0e2a1a 35%, #1a4d2e 65%, #790720 100%)",
+    "status": "upcoming",
+    "whatsIncluded": [
+      "Mixed teams — males & females together",
+      "Competitive games with room for every skill level",
+      "Banter, good vibes & real-life connection",
+      "Teamwork, respect, and pure Sunday football energy",
+      "Pitch & kickoff details shared by admins"
+    ],
+    "galleryNote": "Part of the Link Circle weekend — Saturday picnic, Sunday football.",
+    "dumps": [],
+    "createdAt": "2026-08-09T16:00:00.000Z",
+    "updatedAt": "2026-08-09T16:00:00.000Z"
   }
 ]

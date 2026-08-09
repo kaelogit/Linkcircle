@@ -18,6 +18,7 @@ Open **SQL → New query** and run these files **in order**:
 4. `migrations/004_create_coordinators.sql` + `005_seed_coordinators.sql`
 5. `migrations/006_house_party_ended.sql` (marks House Party as past)
 6. `migrations/007_event_dumps_storage.sql` (**required** for photo/video dump uploads on Vercel)
+7. `migrations/008_weekend_events_aug_2026.sql` (Networking Picnic + Mixed Football)
 
 You should see Beach Hangout + House Party after seeding.
 

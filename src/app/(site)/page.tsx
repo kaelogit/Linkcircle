@@ -16,6 +16,10 @@ export default async function HomePage() {
   const upcoming = await getUpcomingEvents();
   const dumps = await getAllDumps();
   const spotlight = upcoming[0];
+  const weekendPair = upcoming.slice(0, 2);
+  const showWeekend =
+    weekendPair.length >= 2 &&
+    weekendPair.every((e) => e.status === "upcoming" || e.status === "live");
   const todayIndex = (new Date().getDay() + 6) % 7;
   const today = WEEKLY[todayIndex];
   const spotlightHours = spotlight
@@ -148,7 +152,78 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {spotlight && (
+      {showWeekend ? (
+        <section className="relative overflow-hidden border-y border-ink/10">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(145deg, #0b1418 0%, #1a0a10 40%, #790720 85%, #a87a2a 100%)",
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0 grain" />
+          <div className="section-pad relative mx-auto max-w-6xl py-16 text-foam sm:py-24">
+            <Reveal>
+              <p className="text-sm uppercase tracking-[0.28em] text-sand">
+                Weekend drop · 29–30 August
+              </p>
+              <h2 className="font-display mt-4 max-w-4xl text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.95]">
+                Two days. Two experiences. One community.
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg text-foam/80">
+                A full weekend of connection, growth, fun, and community. Saturday
+                we picnic and level up EQ. Sunday we lace up for mixed football.
+              </p>
+
+              <div className="mt-12 grid gap-5 lg:grid-cols-2">
+                {weekendPair.map((event, i) => (
+                  <Link
+                    key={event.id}
+                    href={`/events/${event.slug}`}
+                    className="group overflow-hidden rounded-[1.75rem] border border-white/15 bg-black/30 transition hover:border-sand/50"
+                  >
+                    <div
+                      className="min-h-[14rem] px-6 py-8 sm:px-8 sm:py-10"
+                      style={{ background: event.coverGradient }}
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-white/65">
+                        {i === 0 ? "Saturday" : "Sunday"} ·{" "}
+                        {new Date(event.startsAt).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                        })}
+                      </p>
+                      <h3 className="font-display mt-4 text-3xl sm:text-4xl">
+                        {event.title}
+                      </h3>
+                      <p className="mt-3 max-w-md text-foam/85">{event.tagline}</p>
+                      <span className="mt-8 inline-flex text-sm font-semibold text-sand underline-offset-4 group-hover:underline">
+                        Full details →
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-10 flex flex-wrap gap-3">
+                <Link
+                  href="/events"
+                  className="rounded-full bg-foam px-6 py-3.5 text-sm font-semibold text-ink"
+                >
+                  See the weekend
+                </Link>
+                <Link
+                  href="/join"
+                  className="rounded-full border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold"
+                >
+                  Join Link Circle first
+                </Link>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      ) : (
+        spotlight && (
         <section className="relative overflow-hidden border-y border-ink/10">
           <div
             className="absolute inset-0"
@@ -278,6 +353,7 @@ export default async function HomePage() {
             </Reveal>
           </div>
         </section>
+        )
       )}
 
       {dumps.length > 0 && (

@@ -39,7 +39,7 @@ export default function MarketplacePage() {
               together.
             </p>
             <a
-              href={SITE.marketplaceInvite}
+              href={SITE.whatsappInvite}
               target="_blank"
               rel="noreferrer"
               className="mt-8 inline-flex rounded-full bg-sunset px-5 py-3 text-sm font-semibold"

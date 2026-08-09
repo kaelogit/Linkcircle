@@ -38,7 +38,7 @@ export default function BusinessRoomPage() {
               discussion.
             </p>
             <a
-              href={SITE.businessRoomInvite}
+              href={SITE.whatsappInvite}
               target="_blank"
               rel="noreferrer"
               className="mt-8 inline-flex rounded-full bg-lagoon px-5 py-3 text-sm font-semibold text-ink"

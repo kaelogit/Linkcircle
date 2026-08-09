@@ -53,7 +53,7 @@ export default function SportBanterPage() {
               </li>
             </ul>
             <a
-              href={SITE.sportBanterInvite}
+              href={SITE.whatsappInvite}
               target="_blank"
               rel="noreferrer"
               className="mt-8 inline-flex rounded-full bg-sand px-5 py-3 text-sm font-semibold text-ink"

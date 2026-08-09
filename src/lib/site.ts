@@ -82,11 +82,11 @@ export const SITE = {
   tagline: "More than a community. A movement.",
   mission:
     "Welcome to Link Circle. More than just a community, it's a movement. Our mission is to help people connect, network, grow, collaborate, support businesses, and build meaningful relationships. Through discussions, opportunities, events, and real-life connections, we're creating a place where everyone belongs.",
-  whatsappInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
-  marketplaceInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
+  whatsappInvite: "https://chat.whatsapp.com/IMKHd2Zk8US6J7lCuOWn0a",
+  marketplaceInvite: "https://chat.whatsapp.com/IMKHd2Zk8US6J7lCuOWn0a",
   // Swap these when you have dedicated room invite links
-  businessRoomInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
-  sportBanterInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
+  businessRoomInvite: "https://chat.whatsapp.com/IMKHd2Zk8US6J7lCuOWn0a",
+  sportBanterInvite: "https://chat.whatsapp.com/IMKHd2Zk8US6J7lCuOWn0a",
   contactEmail: "ksqkareem@gmail.com",
   logo: "/brand/logo-circle.png",
   logoMark: "/brand/logo.png",

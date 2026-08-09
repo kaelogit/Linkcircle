@@ -32,6 +32,12 @@ export function SiteFooter() {
               <Link href="/marketplace">LC Marketplace</Link>
             </li>
             <li>
+              <Link href="/business-room">Business Room</Link>
+            </li>
+            <li>
+              <Link href="/sport">Sport Banter / FPL</Link>
+            </li>
+            <li>
               <Link href="/events">Events</Link>
             </li>
             <li>

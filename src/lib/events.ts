@@ -28,7 +28,7 @@ const SEED: EventItem[] = [
     capacity: 30,
     coverGradient:
       "linear-gradient(145deg, #0b1418 0%, #1a0a10 35%, #790720 78%, #a87a2a 100%)",
-    status: "upcoming",
+    status: "ended",
     whatsIncluded: [
       "Full 24-hour house party access",
       "Unique QR access pass + shareable link",
@@ -38,7 +38,7 @@ const SEED: EventItem[] = [
     ],
     dumps: [],
     createdAt: "2026-07-11T00:00:00.000Z",
-    updatedAt: "2026-07-11T00:00:00.000Z",
+    updatedAt: "2026-08-09T00:00:00.000Z",
   },
 ];
 

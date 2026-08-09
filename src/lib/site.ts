@@ -77,12 +77,16 @@ export type Coordinator = {
 export const SITE = {
   name: "Link Circle",
   shortName: "LC",
+  url: "https://linkcircle.ng",
   corridor: "Ajah → Eleko",
   tagline: "More than a community. A movement.",
   mission:
     "Welcome to Link Circle. More than just a community, it's a movement. Our mission is to help people connect, network, grow, collaborate, support businesses, and build meaningful relationships. Through discussions, opportunities, events, and real-life connections, we're creating a place where everyone belongs.",
   whatsappInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
   marketplaceInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
+  // Swap these when you have dedicated room invite links
+  businessRoomInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
+  sportBanterInvite: "https://chat.whatsapp.com/GYr4iuZTO5H2uJOQjLIkWR",
   contactEmail: "ksqkareem@gmail.com",
   logo: "/brand/logo-circle.png",
   logoMark: "/brand/logo.png",
@@ -180,6 +184,22 @@ export const MARKETPLACE_RULES = [
   "Be honest and transparent in your dealings.",
   "Involve admins in major transactions where necessary for a safer marketplace.",
   "Treat fellow members with respect and professionalism.",
+];
+
+export const BUSINESS_ROOM_RULES = [
+  "Share business ideas, plans, and high-minded discussions.",
+  "Keep it constructive: critique ideas, not people.",
+  "No spam sales pitches — use LC Marketplace for buy/sell promotions.",
+  "Respect confidentiality when someone shares a sensitive idea.",
+  "Stay professional and open-minded across every industry.",
+];
+
+export const SPORT_BANTER_RULES = [
+  "Football banter, FPL talk, and sports debates welcome.",
+  "Keep rivalry fun — no personal attacks or toxicity.",
+  "Share scores, predictions, and match reactions.",
+  "FPL league updates and transfer talk belong here.",
+  "Respect everyone’s clubs and opinions.",
 ];
 
 export const COORDINATORS: Coordinator[] = [

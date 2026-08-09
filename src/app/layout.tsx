@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
     default: "Link Circle | Ajah → Eleko",
     template: "%s · Link Circle",
   },
   description:
     "Link Circle is more than a community. It's a movement. Connect, network, grow, and belong along Ajah → Eleko.",
+  openGraph: {
+    title: "Link Circle",
+    description:
+      "More than a community. A movement. Connect, network, grow, and belong along Ajah → Eleko.",
+    url: SITE.url,
+    siteName: SITE.name,
+    locale: "en_NG",
+    type: "website",
+  },
   icons: {
     icon: [{ url: "/brand/logo-circle.png", type: "image/png" }],
     apple: [{ url: "/brand/logo-circle.png", type: "image/png" }],

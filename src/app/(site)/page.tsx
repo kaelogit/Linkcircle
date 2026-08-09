@@ -309,27 +309,83 @@ export default async function HomePage() {
       )}
 
       <section className="border-t border-ink/10 bg-mist">
-        <div className="section-pad mx-auto grid max-w-6xl gap-6 py-16 sm:gap-8 sm:py-24 lg:grid-cols-2">
+        <div className="section-pad mx-auto max-w-6xl py-16 sm:py-24">
           <Reveal>
-            <div className="h-full rounded-[1.75rem] bg-ink p-7 text-foam sm:rounded-[2rem] sm:p-10">
-              <p className="text-sm uppercase tracking-[0.22em] text-sand">
-                LC Marketplace
-              </p>
-              <h2 className="font-display mt-4 text-2xl sm:text-4xl">
-                The business hub of the circle.
-              </h2>
-              <p className="mt-4 text-foam/75">
-                Buy, sell, promote, and support trusted sellers inside Link
-                Circle every day, with honesty and respect.
-              </p>
-              <Link
-                href="/marketplace"
-                className="mt-8 inline-flex rounded-full bg-sunset px-5 py-3 text-sm font-semibold"
-              >
-                Explore marketplace
-              </Link>
-            </div>
+            <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
+              Circle spaces
+            </p>
+            <h2 className="font-display mt-3 text-3xl sm:text-5xl">
+              Marketplace. Ideas. Banter.
+            </h2>
+            <p className="mt-4 max-w-2xl text-ink-soft">
+              Dedicated rooms so the main chat stays clean and every conversation
+              has a home.
+            </p>
           </Reveal>
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            <Reveal>
+              <div className="flex h-full flex-col rounded-[1.75rem] bg-ink p-7 text-foam sm:rounded-[2rem] sm:p-8">
+                <p className="text-sm uppercase tracking-[0.22em] text-sand">
+                  LC Marketplace
+                </p>
+                <h3 className="font-display mt-4 text-2xl">Buy, sell, promote.</h3>
+                <p className="mt-4 flex-1 text-foam/75">
+                  The business hub — trusted sellers, daily promotions, community
+                  support.
+                </p>
+                <Link
+                  href="/marketplace"
+                  className="mt-8 inline-flex rounded-full bg-sunset px-5 py-3 text-sm font-semibold"
+                >
+                  Explore marketplace
+                </Link>
+              </div>
+            </Reveal>
+            <Reveal>
+              <div className="flex h-full flex-col rounded-[1.75rem] border border-ink/10 bg-white/80 p-7 sm:rounded-[2rem] sm:p-8">
+                <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
+                  Business Room
+                </p>
+                <h3 className="font-display mt-4 text-2xl">
+                  Ideas &amp; discussions.
+                </h3>
+                <p className="mt-4 flex-1 text-ink-soft">
+                  High-minded business talk — share ideas, pressure-test plans,
+                  grow together.
+                </p>
+                <Link
+                  href="/business-room"
+                  className="mt-8 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-semibold text-foam"
+                >
+                  Enter Business Room
+                </Link>
+              </div>
+            </Reveal>
+            <Reveal>
+              <div className="flex h-full flex-col rounded-[1.75rem] border border-ink/10 bg-white/80 p-7 sm:rounded-[2rem] sm:p-8">
+                <p className="text-sm uppercase tracking-[0.22em] text-sunset">
+                  Sport Banter / FPL
+                </p>
+                <h3 className="font-display mt-4 text-2xl">
+                  Scores &amp; Fantasy.
+                </h3>
+                <p className="mt-4 flex-1 text-ink-soft">
+                  Football banter, match-day energy, and FPL league drama.
+                </p>
+                <Link
+                  href="/sport"
+                  className="mt-8 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-semibold text-foam"
+                >
+                  Join the banter
+                </Link>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-ink/10">
+        <div className="section-pad mx-auto grid max-w-6xl gap-6 py-16 sm:gap-8 sm:py-24 lg:grid-cols-1">
           <Reveal>
             <div className="h-full rounded-[1.75rem] border border-ink/10 bg-white/80 p-7 sm:rounded-[2rem] sm:p-10">
               <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
@@ -338,7 +394,7 @@ export default async function HomePage() {
               <h2 className="font-display mt-4 text-2xl sm:text-4xl">
                 Founder & admins.
               </h2>
-              <p className="mt-4 text-ink-soft">
+              <p className="mt-4 max-w-xl text-ink-soft">
                 Meet the founder and admins keeping the movement organized:
                 events, marketplace, growth, and door ops.
               </p>

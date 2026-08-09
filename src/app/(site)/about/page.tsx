@@ -43,6 +43,18 @@ const SPACES = [
     cta: "Explore marketplace",
   },
   {
+    title: "Business Room",
+    text: "Share ideas and high-minded business discussions — strategy, feedback, and growth talk.",
+    href: "/business-room",
+    cta: "Enter Business Room",
+  },
+  {
+    title: "LC Sport Banter / FPL",
+    text: "Football banter, match-day energy, and Fantasy Premier League drama.",
+    href: "/sport",
+    cta: "Join the banter",
+  },
+  {
     title: "LC Events",
     text: "Beach hangouts, house parties, meetups, and dumps, plus QR access for paid events.",
     href: "/events",
@@ -251,6 +263,8 @@ export default function AboutPage() {
             <ul className="mt-8 space-y-3 text-foam/75">
               <li>WhatsApp community hub</li>
               <li>LC Marketplace for daily business</li>
+              <li>Business Room for ideas &amp; discussion</li>
+              <li>LC Sport Banter / FPL</li>
               <li>LC Events + photo/video dumps</li>
               <li>Founder & admin crew</li>
               <li>QR access for paid hangouts</li>

@@ -65,7 +65,7 @@ insert into public.events (
   30,
   'linear-gradient(145deg, #0b1418 0%, #1a0a10 35%, #790720 78%, #a87a2a 100%)',
   null,
-  'upcoming',
+  'ended',
   '["Full 24-hour house party access","Unique QR access pass + shareable link","Door check-in welcome by name","Music, games & real face-to-face vibes","Private location drop after payment"]'::jsonb,
   null,
   '[]'::jsonb,

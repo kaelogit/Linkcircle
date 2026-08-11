@@ -22,6 +22,6 @@ Only 30 slots. First come, first served. Registration closes automatically when 
     "Unique QR access pass after payment",
     "Only 30 slots · ₦5,000 per person"
   ]'::jsonb,
-  gallery_note = 'Two days. Two experiences. One community — then Sunday’s Mixed Football Games.',
+  gallery_note = 'Register online · ₦5,000 · only 30 seats.',
   updated_at = now()
 where id = 'evt_networking_picnic_0829';

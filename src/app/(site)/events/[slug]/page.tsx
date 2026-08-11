@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DumpGallery } from "@/components/DumpGallery";
-import { getEventBySlug, getUpcomingEvents } from "@/lib/events";
+import { getEventBySlug } from "@/lib/events";
 import { formatEventRange, isUpcomingStatus } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -25,9 +25,6 @@ export default async function EventDetailPage({ params }: Props) {
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
-
-  const upcoming = isUpcoming ? await getUpcomingEvents() : [];
-  const sibling = upcoming.find((e) => e.id !== event.id);
 
   return (
     <div className="pt-8 sm:pt-12">
@@ -86,27 +83,6 @@ export default async function EventDetailPage({ params }: Props) {
                 ))}
               </ul>
             </>
-          )}
-
-          {sibling && (
-            <div className="mt-10 overflow-hidden rounded-[1.5rem] border border-ink/10">
-              <div
-                className="px-6 py-7 text-foam"
-                style={{ background: sibling.coverGradient }}
-              >
-                <p className="text-xs uppercase tracking-[0.18em] text-white/65">
-                  Same weekend
-                </p>
-                <h3 className="font-display mt-2 text-2xl">{sibling.title}</h3>
-                <p className="mt-2 text-sm text-white/80">{sibling.tagline}</p>
-                <Link
-                  href={`/events/${sibling.slug}`}
-                  className="mt-5 inline-flex text-sm font-semibold underline-offset-4 hover:underline"
-                >
-                  View {sibling.title} →
-                </Link>
-              </div>
-            </div>
           )}
 
           {event.dumps.length > 0 ? (

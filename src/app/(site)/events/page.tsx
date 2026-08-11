@@ -30,30 +30,13 @@ export default async function EventsPage() {
           Past dumps. New drops. Real hangouts.
         </h1>
         <p className="mt-5 max-w-2xl text-base text-ink-soft sm:text-lg">
-          Two days. Two experiences. One community — plus beach days, house
-          parties, and dumps you can relive.
+          From networking picnics to football days, beach hangouts, and house
+          parties — each event stands on its own.
           {dumpsCount > 0
             ? ` ${dumpsCount} dump photos & videos live now.`
             : ""}
         </p>
       </section>
-
-      {upcoming.length >= 2 && (
-        <section className="section-pad mx-auto max-w-6xl pb-8">
-          <div className="overflow-hidden rounded-[1.75rem] atmosphere grain px-6 py-8 text-foam sm:px-10">
-            <p className="text-sm uppercase tracking-[0.22em] text-sand">
-              Weekend of connection
-            </p>
-            <p className="font-display mt-3 text-2xl sm:text-3xl">
-              29–30 August · Picnic + Mixed Football
-            </p>
-            <p className="mt-3 max-w-2xl text-foam/75">
-              Network, grow, and belong all weekend — EQ under the open sky on
-              Saturday, boots and banter on Sunday.
-            </p>
-          </div>
-        </section>
-      )}
 
       <section className="section-pad mx-auto max-w-6xl pb-12 sm:pb-16">
         <h2 className="font-display text-2xl">Upcoming</h2>

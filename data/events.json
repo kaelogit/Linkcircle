@@ -177,7 +177,7 @@
       "Unique QR access pass after payment",
       "Only 30 slots · ₦5,000 per person"
     ],
-    "galleryNote": "Two days. Two experiences. One community — then Sunday’s Mixed Football Games.",
+    "galleryNote": "Register online · ₦5,000 · only 30 seats.",
     "dumps": [],
     "createdAt": "2026-08-09T16:00:00.000Z",
     "updatedAt": "2026-08-11T12:00:00.000Z"
@@ -187,7 +187,7 @@
     "slug": "mixed-football-aug-30",
     "title": "Mixed Football Games",
     "tagline": "Males & females. One pitch. Who sabi play ball pass?",
-    "description": "Sunday, 30th August is pure Link Circle energy on the grass. Mixed Football Games — males and females mixed in teams — built for competition, connection, banter, and good vibes.\n\nAll skill levels welcome. Whether you came to score, assist, or just enjoy the chaos, show up ready to play. Teamwork. Respect. Fun. Come prove yourself, laugh hard, and leave knowing the circle a little better.\n\nThis is Day Two of the weekend: after Saturday’s Networking Picnic, we close it out with boots on, hearts open, and rivalries friendly. Network. Grow. Belong — then go again on Sunday.",
+    "description": "Sunday, 30th August is pure Link Circle energy on the grass. Mixed Football Games — males and females mixed in teams — built for competition, connection, banter, and good vibes.\n\nAll skill levels welcome. Whether you came to score, assist, or just enjoy the chaos, show up ready to play. Teamwork. Respect. Fun. Come prove yourself, laugh hard, and leave knowing the circle a little better.\n\nBoots on, hearts open, rivalries friendly. Network. Grow. Belong.",
     "startsAt": "2026-08-30T15:00:00+01:00",
     "endsAt": "2026-08-30T19:00:00+01:00",
     "locationPublic": "Ajah → Eleko (pitch details from admins)",
@@ -202,9 +202,9 @@
       "Teamwork, respect, and pure Sunday football energy",
       "Pitch & kickoff details shared by admins"
     ],
-    "galleryNote": "Part of the Link Circle weekend — Saturday picnic, Sunday football.",
+    "galleryNote": "A standalone Link Circle sports day — all skill levels welcome.",
     "dumps": [],
     "createdAt": "2026-08-09T16:00:00.000Z",
-    "updatedAt": "2026-08-09T16:00:00.000Z"
+    "updatedAt": "2026-08-11T13:30:00.000Z"
   }
 ]

@@ -159,26 +159,28 @@
     "slug": "networking-picnic-aug-29",
     "title": "Networking Picnic",
     "tagline": "Conversations under the open sky. EQ that changes how you connect.",
-    "description": "Saturday, 29th August is for the people who want more than small talk. Link Circle is hosting a Networking Picnic — an outdoor afternoon built for meaningful conversations, new faces, and real relationships along the Ajah → Eleko corridor.\n\nAt the heart of the day: a guest session with Adetoun Irukera (Mrs) on Emotional Intelligence (EQ): A Key Ingredient to Successful Relationships. Expect practical insights you can use immediately — how you listen, how you show up, and how you build trust with people who matter.\n\nCome ready to meet new people, exchange ideas, and grow together. Soft energy. Strong connections. One amazing community.",
+    "description": "Saturday, 29th August is for the people who want more than small talk. Link Circle is hosting a Networking Picnic — an outdoor afternoon built for meaningful conversations, new faces, laughter, games, and unforgettable memories along the Ajah → Eleko corridor.\n\nAt the heart of the day: a guest session with Mrs. Adetoun Irukera on Emotional Intelligence (EQ): A Key Ingredient to Successful Relationships. Expect practical insights, plus an interactive Q&A where everyone can ask questions and learn together.\n\nThe Picnic Challenge: everyone attending brings something to share. It does not have to be expensive — bring whatever you genuinely can. Food, drinks, snacks: whatever you bring becomes something the whole circle enjoys together.\n\nOnly 30 slots. First come, first served. Registration closes automatically when 30 people have paid. Contribution: ₦5,000 per person. Venue shared after registration.",
     "startsAt": "2026-08-29T10:00:00+01:00",
     "endsAt": "2026-08-29T17:00:00+01:00",
-    "locationPublic": "Ajah → Eleko (exact picnic spot shared by admins)",
-    "priceLabel": "Details & registration via admins",
-    "capacity": 40,
+    "locationPublic": "Ajah → Eleko (exact picnic spot shared after registration)",
+    "priceLabel": "₦5,000 per person",
+    "capacity": 30,
     "coverGradient": "linear-gradient(145deg, #1a2e24 0%, #2d4a3a 28%, #790720 72%, #d4a24a 100%)",
     "coverImage": "/events/weekend-aug-2026.png",
     "status": "upcoming",
     "whatsIncluded": [
-      "Outdoor networking picnic with Link Circle members",
-      "Guest speaker session with Adetoun Irukera (Mrs)",
-      "Theme deep-dive: Emotional Intelligence (EQ) for stronger relationships",
-      "Space to meet new people, exchange ideas & grow together",
-      "Registration & venue details shared by admins"
+      "Networking picnic with Link Circle members",
+      "Guest speaker: Mrs. Adetoun Irukera on Emotional Intelligence (EQ)",
+      "Interactive Q&A session",
+      "Games, conversations, scenery & photo moments",
+      "Mandatory picnic contribution — bring something to share",
+      "Unique QR access pass after payment",
+      "Only 30 slots · ₦5,000 per person"
     ],
     "galleryNote": "Two days. Two experiences. One community — then Sunday’s Mixed Football Games.",
     "dumps": [],
     "createdAt": "2026-08-09T16:00:00.000Z",
-    "updatedAt": "2026-08-09T16:00:00.000Z"
+    "updatedAt": "2026-08-11T12:00:00.000Z"
   },
   {
     "id": "evt_mixed_football_0830",

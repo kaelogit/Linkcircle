@@ -173,16 +173,33 @@ export default async function EventDetailPage({ params }: Props) {
 
           {isUpcoming ? (
             <div className="mt-8 space-y-3">
-              <p className="text-sm text-ink-soft">
-                More details and registration links will be shared by the
-                admins. Join the circle so you don&apos;t miss the drop.
-              </p>
-              <Link
-                href="/join"
-                className="block rounded-full bg-sunset py-3 text-center text-sm font-semibold text-white"
-              >
-                Ask admins / Join first
-              </Link>
+              {event.slug === "networking-picnic-aug-29" ? (
+                <>
+                  <p className="text-sm text-ink-soft">
+                    ₦5,000 · only 30 seats · bring something to share. Payment
+                    via Paystack reserves your spot and issues a QR pass.
+                  </p>
+                  <Link
+                    href="/events/networking-picnic-aug-29/register"
+                    className="block rounded-full bg-sunset py-3 text-center text-sm font-semibold text-white"
+                  >
+                    Register &amp; pay ₦5,000
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-ink-soft">
+                    More details and registration links will be shared by the
+                    admins. Join the circle so you don&apos;t miss the drop.
+                  </p>
+                  <Link
+                    href="/join"
+                    className="block rounded-full bg-sunset py-3 text-center text-sm font-semibold text-white"
+                  >
+                    Ask admins / Join first
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
             <div className="mt-8 space-y-3">

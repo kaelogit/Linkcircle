@@ -81,6 +81,15 @@ export default function AdminDashboard() {
           </p>
         </Link>
         <Link
+          href="/admin/picnic"
+          className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
+        >
+          <p className="font-display text-xl">Picnic</p>
+          <p className="mt-2 text-sm text-white/50">
+            Networking Picnic signups, bring-along list, Paystack payments.
+          </p>
+        </Link>
+        <Link
           href="/admin/coordinators"
           className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
         >

@@ -179,7 +179,11 @@ export default async function HomePage() {
                 {weekendPair.map((event, i) => (
                   <Link
                     key={event.id}
-                    href={`/events/${event.slug}`}
+                    href={
+                      event.slug === "networking-picnic-aug-29"
+                        ? "/events/networking-picnic-aug-29/register"
+                        : `/events/${event.slug}`
+                    }
                     className="group overflow-hidden rounded-[1.75rem] border border-white/15 bg-black/30 transition hover:border-sand/50"
                   >
                     <div
@@ -198,7 +202,9 @@ export default async function HomePage() {
                       </h3>
                       <p className="mt-3 max-w-md text-foam/85">{event.tagline}</p>
                       <span className="mt-8 inline-flex text-sm font-semibold text-sand underline-offset-4 group-hover:underline">
-                        Full details →
+                        {event.slug === "networking-picnic-aug-29"
+                          ? "Register & pay ₦5,000 →"
+                          : "Full details →"}
                       </span>
                     </div>
                   </Link>

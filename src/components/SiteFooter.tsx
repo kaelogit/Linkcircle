@@ -46,6 +46,9 @@ export function SiteFooter() {
             <li>
               <Link href="/coordinators">Founder & admins</Link>
             </li>
+            <li>
+              <Link href="/donate">Donate</Link>
+            </li>
           </ul>
         </div>
         <div>
@@ -57,6 +60,9 @@ export function SiteFooter() {
               <a href={SITE.whatsappInvite} target="_blank" rel="noreferrer">
                 Join WhatsApp community
               </a>
+            </li>
+            <li>
+              <Link href="/donate">Support the community</Link>
             </li>
             <li>
               <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>

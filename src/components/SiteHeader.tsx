@@ -14,6 +14,7 @@ const LINKS = [
   { href: "/events", label: "Events" },
   { href: "/directory", label: "Directory" },
   { href: "/coordinators", label: "People" },
+  { href: "/donate", label: "Donate" },
 ];
 
 export function SiteHeader() {

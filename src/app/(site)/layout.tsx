@@ -1,3 +1,4 @@
+import { DonateStrip } from "@/components/DonateStrip";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
@@ -10,6 +11,7 @@ export default function SiteLayout({
     <div className="flex min-h-full flex-1 flex-col">
       <SiteHeader />
       <main className="flex-1">{children}</main>
+      <DonateStrip />
       <SiteFooter />
     </div>
   );

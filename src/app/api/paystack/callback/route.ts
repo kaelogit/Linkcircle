@@ -10,6 +10,7 @@ import {
 } from "@/lib/paystack";
 import { PICNIC_AMOUNT_KOBO } from "@/lib/picnic";
 import { getParticipantsByEvent } from "@/lib/participants";
+import { isDonateReference } from "@/lib/donate";
 
 export async function GET(request: Request) {
   const origin = siteOriginFromRequest(request);
@@ -17,11 +18,27 @@ export async function GET(request: Request) {
   const reference = searchParams.get("reference") || searchParams.get("trxref");
 
   if (!reference) {
-    return NextResponse.redirect(
-      `${origin}/events/networking-picnic-aug-29/register?error=missing_ref`,
-    );
+    return NextResponse.redirect(`${origin}/donate?error=missing_ref`);
   }
 
+  // Community donations
+  if (isDonateReference(reference)) {
+    try {
+      const verified = await verifyPaystackPayment(reference);
+      if (verified.status !== "success") {
+        return NextResponse.redirect(`${origin}/donate?error=payment_failed`);
+      }
+      const amountNaira = Math.round(verified.amount / 100);
+      return NextResponse.redirect(
+        `${origin}/donate/success?ref=${encodeURIComponent(reference)}&amount=${amountNaira}`,
+      );
+    } catch (err) {
+      console.error("Donate callback error:", err);
+      return NextResponse.redirect(`${origin}/donate?error=verify`);
+    }
+  }
+
+  // Picnic registration
   try {
     const verified = await verifyPaystackPayment(reference);
     if (verified.status !== "success") {

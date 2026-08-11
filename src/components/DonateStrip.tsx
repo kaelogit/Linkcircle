@@ -8,7 +8,7 @@ export function DonateStrip() {
   if (pathname === "/donate" || pathname?.startsWith("/donate/")) return null;
 
   return (
-    <section className="border-t border-ink/10 bg-mist">
+    <section className="border-t border-ink/10 bg-mist print:hidden">
       <div className="section-pad mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 py-12 sm:flex-row sm:items-center sm:py-14">
         <div className="max-w-xl">
           <p className="text-sm uppercase tracking-[0.22em] text-lagoon">

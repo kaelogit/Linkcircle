@@ -35,7 +35,7 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`relative z-50 section-pad ${
+      className={`relative z-50 section-pad print:hidden ${
         dark
           ? "atmosphere text-foam"
           : "border-b border-ink/10 bg-foam text-ink"

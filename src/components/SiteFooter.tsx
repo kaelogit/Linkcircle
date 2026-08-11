@@ -3,7 +3,7 @@ import { SITE } from "@/lib/site";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-ink/10 bg-ink text-foam">
+    <footer className="border-t border-ink/10 bg-ink text-foam print:hidden">
       <div className="section-pad mx-auto grid max-w-6xl gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">

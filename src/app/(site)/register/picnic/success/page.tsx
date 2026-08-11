@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getRegistrationByReference } from "@/lib/registrations";
 import { getParticipantsByEvent } from "@/lib/participants";
+import { formatNaira } from "@/components/PicnicInvoiceDocument";
+import { PICNIC_AMOUNT_NAIRA } from "@/lib/picnic";
 
 export const metadata: Metadata = {
   title: "Registration confirmed",
@@ -16,12 +18,18 @@ export default async function PicnicSuccessPage({ searchParams }: Props) {
   let passToken = pass;
   let name = "";
   let bringItem = "";
+  let email = "";
+  let amountNaira = PICNIC_AMOUNT_NAIRA;
+  let paid = false;
 
   if (ref) {
     const reg = await getRegistrationByReference(ref);
     if (reg) {
       name = reg.fullName;
       bringItem = reg.bringItem;
+      email = reg.email;
+      amountNaira = Math.round(reg.amountKobo / 100) || PICNIC_AMOUNT_NAIRA;
+      paid = reg.status === "paid";
       if (!passToken && reg.participantId) {
         const parts = await getParticipantsByEvent(reg.eventId);
         passToken = parts.find((p) => p.id === reg.participantId)?.passToken;
@@ -52,13 +60,48 @@ export default async function PicnicSuccessPage({ searchParams }: Props) {
           {name ? `See you, ${name.split(" ")[0]}!` : "Registration confirmed"}
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
-          Your ₦5,000 contribution is confirmed for the Networking Picnic.
+          Your {formatNaira(amountNaira)} contribution is confirmed for the
+          Networking Picnic.
           {bringItem ? ` You're bringing: ${bringItem}.` : ""}
         </p>
         <p className="mt-3 text-ink-soft">
-          Save your QR pass for door check-in. Venue details drop via admins
-          after registration.
+          Save your QR pass for door check-in. Download your invoice for your
+          records. Venue details drop via admins after registration.
         </p>
+
+        {(email || ref) && (
+          <div className="mx-auto mt-8 max-w-md rounded-2xl border border-ink/10 bg-white px-5 py-4 text-left text-sm">
+            <p className="text-xs uppercase tracking-[0.16em] text-ink/40">
+              Receipt summary
+            </p>
+            <dl className="mt-3 space-y-2 text-ink-soft">
+              {name ? (
+                <div className="flex justify-between gap-4">
+                  <dt>Name</dt>
+                  <dd className="font-medium text-ink">{name}</dd>
+                </div>
+              ) : null}
+              {email ? (
+                <div className="flex justify-between gap-4">
+                  <dt>Email</dt>
+                  <dd className="font-medium text-ink">{email}</dd>
+                </div>
+              ) : null}
+              <div className="flex justify-between gap-4">
+                <dt>Amount</dt>
+                <dd className="font-medium text-ink">
+                  {formatNaira(amountNaira)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>Status</dt>
+                <dd className="font-medium text-emerald-700">
+                  {paid ? "Paid" : "Processing"}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        )}
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           {passToken ? (
@@ -67,6 +110,14 @@ export default async function PicnicSuccessPage({ searchParams }: Props) {
               className="rounded-full bg-sunset px-8 py-3.5 text-sm font-semibold text-white"
             >
               Open your QR pass
+            </Link>
+          ) : null}
+          {ref && paid ? (
+            <Link
+              href={`/register/picnic/invoice?ref=${encodeURIComponent(ref)}`}
+              className="rounded-full bg-ink px-8 py-3.5 text-sm font-semibold text-foam"
+            >
+              Download invoice
             </Link>
           ) : null}
           <Link

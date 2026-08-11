@@ -28,31 +28,48 @@ export default async function EventDetailPage({ params }: Props) {
 
   return (
     <div className="pt-8 sm:pt-12">
-      <section
-        className="section-pad relative mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] text-foam sm:rounded-[2rem]"
-        style={{ background: event.coverGradient }}
-      >
-        {event.coverImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={event.coverImage}
-            alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
-          />
-        )}
-        <div className="relative px-6 py-10 sm:px-12 sm:py-14">
-          <p className="text-sm uppercase tracking-[0.2em] text-white/70">
-            {isUpcoming ? "Upcoming" : "Past hangout"} ·{" "}
-            {formatEventRange(event.startsAt, event.endsAt)}
-          </p>
-          <h1 className="font-display mt-4 max-w-3xl text-4xl sm:text-6xl">
-            {event.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
-            {event.tagline}
-          </p>
-        </div>
-      </section>
+      {event.coverImage ? (
+        <section className="section-pad mx-auto max-w-6xl">
+          <div className="overflow-hidden rounded-[1.75rem] border border-ink/10 sm:rounded-[2rem]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="h-auto w-full object-cover object-top"
+            />
+          </div>
+          <div className="mt-6 px-1">
+            <p className="text-sm uppercase tracking-[0.2em] text-lagoon">
+              {isUpcoming ? "Upcoming" : "Past hangout"} ·{" "}
+              {formatEventRange(event.startsAt, event.endsAt)}
+            </p>
+            <h1 className="font-display mt-3 max-w-3xl text-4xl sm:text-6xl">
+              {event.title}
+            </h1>
+            <p className="mt-3 max-w-2xl text-base text-ink-soft sm:text-lg">
+              {event.tagline}
+            </p>
+          </div>
+        </section>
+      ) : (
+        <section
+          className="section-pad relative mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] text-foam sm:rounded-[2rem]"
+          style={{ background: event.coverGradient }}
+        >
+          <div className="relative px-6 py-10 sm:px-12 sm:py-14">
+            <p className="text-sm uppercase tracking-[0.2em] text-white/70">
+              {isUpcoming ? "Upcoming" : "Past hangout"} ·{" "}
+              {formatEventRange(event.startsAt, event.endsAt)}
+            </p>
+            <h1 className="font-display mt-4 max-w-3xl text-4xl sm:text-6xl">
+              {event.title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
+              {event.tagline}
+            </p>
+          </div>
+        </section>
+      )}
 
       <section className="section-pad mx-auto grid max-w-6xl gap-10 py-10 sm:py-14 lg:grid-cols-[1.2fr_0.8fr]">
         <div>

@@ -60,7 +60,7 @@ export default async function PicnicSuccessPage({ searchParams }: Props) {
           {name ? `See you, ${name.split(" ")[0]}!` : "Registration confirmed"}
         </h1>
         <p className="mt-4 text-lg text-ink-soft">
-          Your {formatNaira(amountNaira)} contribution is confirmed for the
+          Your {formatNaira(amountNaira)} registration fee is confirmed for the
           Networking Picnic.
           {bringItem ? ` You're bringing: ${bringItem}.` : ""}
         </p>

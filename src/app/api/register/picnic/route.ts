@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       !(BRING_OPTIONS as readonly string[]).includes(bringPreset)
     ) {
       return NextResponse.json(
-        { error: "Invalid picnic contribution choice." },
+        { error: "Invalid picnic item choice." },
         { status: 400 },
       );
     }

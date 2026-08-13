@@ -91,7 +91,7 @@ export function PicnicInvoiceDocument({
           <tbody>
             <tr className="border-t border-black/10">
               <td className="px-4 py-4">
-                <p className="font-medium">Networking Picnic contribution</p>
+                <p className="font-medium">Networking Picnic registration fee</p>
                 <p className="mt-1 text-black/55">
                   Saturday 29 August 2026 · Event seat (1 of 30)
                 </p>

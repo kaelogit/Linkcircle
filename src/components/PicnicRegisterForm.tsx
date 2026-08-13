@@ -110,7 +110,7 @@ export function PicnicRegisterForm() {
             </div>
             <div className="text-right">
               <p className="text-xs uppercase tracking-[0.2em] text-ink/45">
-                Contribution
+                Registration fee
               </p>
               <p className="font-display mt-2 text-3xl text-sunset">
                 ₦{PICNIC_AMOUNT_NAIRA.toLocaleString("en-NG")}
@@ -259,7 +259,7 @@ export function PicnicRegisterForm() {
                   value={bringOther}
                   onChange={(e) => setBringOther(e.target.value)}
                   className="mt-1 w-full rounded-xl border border-ink/15 bg-mist/40 px-4 py-3 text-ink outline-none focus:border-sunset"
-                  placeholder="Your picnic contribution"
+                  placeholder="What you'll bring to share"
                 />
               </label>
             )}

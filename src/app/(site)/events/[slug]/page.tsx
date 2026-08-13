@@ -169,8 +169,9 @@ export default async function EventDetailPage({ params }: Props) {
               {event.slug === "networking-picnic-aug-29" ? (
                 <>
                   <p className="text-sm text-ink-soft">
-                    ₦5,000 · only 30 seats · bring something to share. Payment
-                    via Paystack reserves your spot and issues a QR pass.
+                    ₦5,000 registration fee · only 30 seats · bring something
+                    to share. Payment via Paystack reserves your spot and
+                    issues a QR pass.
                   </p>
                   <Link
                     href="/events/networking-picnic-aug-29/register"

@@ -2,9 +2,39 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { PicnicRegisterForm } from "@/components/PicnicRegisterForm";
+import { SITE } from "@/lib/site";
+
+const picnicOgImage = "/events/networking-picnic-aug-29.png";
+const registerUrl = `${SITE.url}/events/networking-picnic-aug-29/register`;
 
 export const metadata: Metadata = {
   title: "Register · Networking Picnic",
+  description:
+    "Link Circle Networking Picnic — Saturday 29 August 2026. ₦5,000 · only 30 seats. Good people, great conversations, unforgettable memories. Register & pay to reserve your spot.",
+  openGraph: {
+    title: "Link Circle Networking Picnic",
+    description:
+      "Saturday 29 August 2026 · ₦5,000 per person · Only 30 seats. Register now.",
+    url: registerUrl,
+    siteName: SITE.name,
+    locale: "en_NG",
+    type: "website",
+    images: [
+      {
+        url: picnicOgImage,
+        width: 1200,
+        height: 630,
+        alt: "Link Circle Networking Picnic — Saturday 29th August 2026",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Link Circle Networking Picnic",
+    description:
+      "Saturday 29 August 2026 · ₦5,000 · Only 30 seats. Register now.",
+    images: [picnicOgImage],
+  },
 };
 
 export default function PicnicRegisterPage() {
@@ -14,7 +44,7 @@ export default function PicnicRegisterPage() {
         <div className="overflow-hidden rounded-[1.75rem] border border-ink/10 bg-ink sm:rounded-[2rem]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/events/networking-picnic-aug-29.png"
+            src={picnicOgImage}
             alt="Link Circle Networking Picnic — Saturday 29th August 2026"
             className="h-auto w-full object-cover object-top"
           />
@@ -42,7 +72,9 @@ export default function PicnicRegisterPage() {
       </section>
 
       <section className="section-pad mx-auto max-w-6xl py-10 sm:py-14">
-        <Suspense fallback={<p className="text-ink-soft">Loading registration…</p>}>
+        <Suspense
+          fallback={<p className="text-ink-soft">Loading registration…</p>}
+        >
           <PicnicRegisterForm />
         </Suspense>
       </section>

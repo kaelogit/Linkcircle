@@ -4,6 +4,7 @@ import { BRING_OPTIONS } from "@/lib/picnic";
 import {
   createPendingRegistration,
   listRegistrations,
+  reconcilePendingPicnicPayments,
 } from "@/lib/registrations";
 import {
   initializePaystackPayment,
@@ -16,6 +17,7 @@ export async function GET() {
     if (!(await isAdminAuthenticated())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    await reconcilePendingPicnicPayments();
     const list = await listRegistrations();
     return NextResponse.json(list);
   } catch (err) {

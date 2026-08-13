@@ -6,6 +6,7 @@ import {
 } from "@/lib/registrations";
 import { verifyPaystackPayment } from "@/lib/paystack";
 import { PICNIC_AMOUNT_KOBO } from "@/lib/picnic";
+import { isDonateReference } from "@/lib/donate";
 
 function validSignature(rawBody: string, signature: string | null) {
   const secret = process.env.PAYSTACK_SECRET_KEY?.trim();
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
     };
 
     const reference = event.data?.reference;
-    if (!reference) {
+    if (!reference || isDonateReference(reference)) {
       return NextResponse.json({ ok: true });
     }
 

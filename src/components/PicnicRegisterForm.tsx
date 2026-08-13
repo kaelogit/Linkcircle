@@ -126,7 +126,7 @@ export function PicnicRegisterForm() {
           <p className="mt-3 text-sm text-ink-soft">
             {closed
               ? "Registration closed — all 30 paid seats are taken."
-              : `${paid} confirmed · first come, first served.`}
+              : `${paid} confirmed · ${remaining} seat${remaining === 1 ? "" : "s"} left.`}
           </p>
         </div>
 

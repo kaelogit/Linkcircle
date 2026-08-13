@@ -144,13 +144,15 @@ export async function getPicnicSlotStatus(eventId = PICNIC_EVENT_ID) {
   const now = Date.now();
   const paid = list.filter((r) => r.status === "paid").length;
   const held = list.filter((r) => countsTowardHold(r, now)).length;
-  const remaining = Math.max(0, PICNIC_CAPACITY - held);
+  // Public counter is paid seats only. Pending checkouts can still block
+  // new signups via `held`, but they must not look like empty seats vanished.
+  const remaining = Math.max(0, PICNIC_CAPACITY - paid);
   return {
     capacity: PICNIC_CAPACITY,
     paid,
     held,
     remaining,
-    closed: remaining <= 0 || paid >= PICNIC_CAPACITY,
+    closed: paid >= PICNIC_CAPACITY || held >= PICNIC_CAPACITY,
   };
 }
 
@@ -165,7 +167,7 @@ export type CreateRegistrationInput = {
 
 export async function createPendingRegistration(input: CreateRegistrationInput) {
   const slots = await getPicnicSlotStatus();
-  if (slots.closed) {
+  if (slots.paid >= PICNIC_CAPACITY || slots.held >= PICNIC_CAPACITY) {
     throw new Error("Registration is closed. All 30 slots are taken.");
   }
 
@@ -225,11 +227,15 @@ export async function finalizePaidRegistration(reference: string) {
   const existing = await getRegistrationByReference(reference);
   if (!existing) throw new Error("Registration not found");
 
-  if (existing.status === "paid" && existing.participantId) {
-    const { getParticipantsByEvent } = await import("./participants");
-    const participants = await getParticipantsByEvent(existing.eventId);
-    const match = participants.find((p) => p.id === existing.participantId);
-    return { ...existing, passToken: match?.passToken };
+  if (existing.status === "paid") {
+    let passToken: string | undefined;
+    if (existing.participantId) {
+      const { getParticipantsByEvent } = await import("./participants");
+      const participants = await getParticipantsByEvent(existing.eventId);
+      passToken = participants.find((p) => p.id === existing.participantId)
+        ?.passToken;
+    }
+    return { ...existing, passToken };
   }
 
   // Hard capacity lock: only count paid seats
@@ -249,34 +255,74 @@ export async function finalizePaidRegistration(reference: string) {
     );
   }
 
-  const participant = await addParticipant({
-    eventId: existing.eventId,
-    fullName: existing.fullName,
-    phone: existing.phone,
-    whatsapp: existing.whatsapp,
-    paymentStatus: "paid",
-  });
+  let participantId = existing.participantId;
+  let passToken: string | undefined;
 
-  const member = await ensureMemberFromParticipant({
-    fullName: existing.fullName,
-    phone: existing.phone,
-    whatsapp: existing.whatsapp,
-  });
-
-  if (member && existing.residence && !member.bio?.trim()) {
-    await updateMember(member.id, {
-      bio: `Lives in: ${existing.residence}`,
+  if (!participantId) {
+    const participant = await addParticipant({
+      eventId: existing.eventId,
+      fullName: existing.fullName,
+      phone: existing.phone,
+      whatsapp: existing.whatsapp,
+      paymentStatus: "paid",
     });
+    participantId = participant.id;
+    passToken = participant.passToken;
+  }
+
+  try {
+    const member = await ensureMemberFromParticipant({
+      fullName: existing.fullName,
+      phone: existing.phone,
+      whatsapp: existing.whatsapp,
+    });
+    if (member && existing.residence && !member.bio?.trim()) {
+      await updateMember(member.id, {
+        bio: `Lives in: ${existing.residence}`,
+      });
+    }
+  } catch (err) {
+    console.error("Directory sync after picnic payment failed:", err);
   }
 
   const paid: EventRegistration = {
     ...existing,
     status: "paid",
-    participantId: participant.id,
+    participantId,
     updatedAt: new Date().toISOString(),
   };
   await saveRegistration(paid);
-  return { ...paid, passToken: participant.passToken };
+  return { ...paid, passToken };
+}
+
+let lastReconcileAt = 0;
+
+/** Confirm pending rows that Paystack already captured (missed callback). */
+export async function reconcilePendingPicnicPayments() {
+  const now = Date.now();
+  if (now - lastReconcileAt < 15_000) return;
+  lastReconcileAt = now;
+
+  const { verifyPaystackPayment } = await import("./paystack");
+  const list = await listRegistrations();
+  const pending = list.filter((r) => r.status === "pending").slice(0, 10);
+
+  for (const row of pending) {
+    try {
+      const verified = await verifyPaystackPayment(row.paystackReference);
+      if (
+        verified.status === "success" &&
+        verified.amount >= PICNIC_AMOUNT_KOBO
+      ) {
+        await finalizePaidRegistration(row.paystackReference);
+      }
+    } catch (err) {
+      console.error(
+        `Picnic reconcile failed for ${row.paystackReference}:`,
+        err,
+      );
+    }
+  }
 }
 
 export async function markRegistrationFailed(reference: string) {

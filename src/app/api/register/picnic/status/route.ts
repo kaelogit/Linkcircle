@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { getPicnicSlotStatus } from "@/lib/registrations";
+import {
+  getPicnicSlotStatus,
+  reconcilePendingPicnicPayments,
+} from "@/lib/registrations";
 
 export async function GET() {
   try {
+    await reconcilePendingPicnicPayments();
     const status = await getPicnicSlotStatus();
     return NextResponse.json(status);
   } catch (err) {

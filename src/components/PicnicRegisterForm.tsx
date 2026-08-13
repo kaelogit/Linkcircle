@@ -132,7 +132,7 @@ export function PicnicRegisterForm() {
 
         <div className="rounded-[1.75rem] atmosphere grain p-6 text-foam sm:p-8">
           <p className="text-sm uppercase tracking-[0.22em] text-sand">
-            Picnic challenge
+            Picnic challenge · Mandatory
           </p>
           <h2 className="font-display mt-3 text-2xl sm:text-3xl">
             Everyone brings something to share.
@@ -235,7 +235,8 @@ export function PicnicRegisterForm() {
             </label>
 
             <label className="block text-sm text-ink/50">
-              What will you bring to share?
+              What will you bring to share?{" "}
+              <span className="font-semibold text-sunset">Mandatory</span>
               <select
                 required
                 value={bringPreset}
@@ -250,6 +251,10 @@ export function PicnicRegisterForm() {
                 ))}
               </select>
             </label>
+            <p className="-mt-2 text-xs text-ink/45">
+              Everyone must bring something to share. It does not have to be
+              expensive — just come with something.
+            </p>
 
             {bringPreset === "Other" && (
               <label className="block text-sm text-ink/50">
@@ -275,8 +280,8 @@ export function PicnicRegisterForm() {
             </button>
 
             <p className="text-center text-xs text-ink/40">
-              By paying you agree to bring a shareable picnic item and show your
-              QR pass at check-in.
+              By paying you agree that bringing something to share is mandatory,
+              and you will show your QR pass at check-in.
             </p>
           </form>
         )}

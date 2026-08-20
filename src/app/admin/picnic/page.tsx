@@ -23,7 +23,7 @@ export default function AdminPicnicRegistrationsPage() {
   const [onePhone, setOnePhone] = useState("");
 
   const load = useCallback(() => {
-    fetch("/api/register/picnic")
+    return fetch("/api/register/picnic")
       .then(async (r) => {
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || "Failed");
@@ -35,7 +35,35 @@ export default function AdminPicnicRegistrationsPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    (async () => {
+      // Idempotent: create any missing complimentary admin seats, then refresh list
+      try {
+        const r = await fetch("/api/register/picnic/complimentary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: "admins" }),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!cancelled && r.ok && Array.isArray(data.results)) {
+          const created = (data.results as CompResult[]).filter(
+            (x) => x.status === "created",
+          ).length;
+          if (created > 0) {
+            setCompResults(data.results as CompResult[]);
+            setCompMessage(
+              `Added ${created} complimentary admin seat(s). They count toward the 30.`,
+            );
+          }
+        }
+      } catch {
+        /* list load still runs */
+      }
+      if (!cancelled) await load();
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [load]);
 
   const paid = list.filter((r) => r.status === "paid");

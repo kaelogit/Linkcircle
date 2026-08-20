@@ -26,7 +26,12 @@ values
   ('admin-barakat', 'Aremu Barakat Ejide', 'Welfare Director',
    'As the Welfare Director, I lead with care and support for the people of this community. I act as a bridge ensuring the activities and programs are meeting the needs of the members. I also look after the physical and emotional wellbeing of members, safeguarding, organizing support during personal milestones or crises, and promoting a friendly, inclusive, and safe environment for everyone in the group.',
    'This is a community built on love and trust which enables us to be a proud family. The vision and mission of the group is a transparent one which gives room for group and individual growth, so therefore, it is "LINKED".',
-   'Arbar / Hume', false, 'AB', '#e85d4c', '/team/aremu-barakat.png', 40)
+   'Arbar / Hume', false, 'AB', '#e85d4c', '/team/aremu-barakat.png', 40),
+
+  ('admin-kiel', 'Kiel Tee', 'Admin',
+   'Link Circle admin helping members feel welcome, stay connected, and show up for community hangouts and programs along the Ajah → Eleko corridor.',
+   'Community works when people show up for each other. Link Circle is that space — belonging, connection, and real-life support.',
+   null, false, 'KT', '#2f5d50', null, 50)
 
 on conflict (id) do update set
   name = excluded.name,

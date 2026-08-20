@@ -36,3 +36,30 @@ export const BRING_OPTIONS = [
 ] as const;
 
 export type BringOption = (typeof BRING_OPTIONS)[number];
+
+/** LC admins who get a complimentary picnic seat (no Paystack). Skip if already paid. */
+export type PicnicAdminSeat = {
+  fullName: string;
+  phone: string;
+  email: string;
+  residence?: string;
+  bringItem?: string;
+  /** Founder already paid publicly — never auto-comp */
+  skipAuto?: boolean;
+};
+
+export const PICNIC_ADMIN_COMPLIMENTARY_SEATS: PicnicAdminSeat[] = [
+  {
+    fullName: "Abdulkareem Abdulkareem",
+    phone: "",
+    email: "founder@linkcircle.ng",
+    skipAuto: true,
+  },
+  {
+    fullName: "Kiel Tee",
+    phone: "09133263052",
+    email: "kiel.tee@linkcircle.ng",
+    residence: "Ajah / Lekki corridor",
+    bringItem: "Admin / hosting support",
+  },
+];

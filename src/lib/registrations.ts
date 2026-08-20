@@ -7,8 +7,16 @@ import {
   PICNIC_CAPACITY,
   PICNIC_EVENT_ID,
   PENDING_HOLD_MS,
+  PICNIC_ADMIN_COMPLIMENTARY_SEATS,
+  type PicnicAdminSeat,
 } from "./picnic";
 import { readJsonFile, writeJsonFile } from "./json-store";
+import { normalizePhoneKey } from "./members";
+
+function phoneMatchKey(phone: string) {
+  const digits = normalizePhoneKey(phone);
+  return digits.length >= 10 ? digits.slice(-10) : digits;
+}
 
 export type RegistrationStatus =
   | "pending"
@@ -220,6 +228,164 @@ async function saveRegistration(updated: EventRegistration) {
     list[idx] = updated;
     await writeLocal(list);
   }
+}
+
+export async function findPaidRegistrationByPhone(phone: string) {
+  const key = phoneMatchKey(phone);
+  if (!key) return null;
+  const list = await listRegistrations();
+  return (
+    list.find(
+      (r) => r.status === "paid" && phoneMatchKey(r.phone) === key,
+    ) ?? null
+  );
+}
+
+/**
+ * Complimentary picnic seat for LC admins — counts toward the 30, no Paystack.
+ * Skips if this phone already has a paid seat (e.g. founder who paid).
+ */
+export async function createComplimentaryRegistration(
+  input: CreateRegistrationInput & { amountKobo?: number },
+) {
+  const existing = await findPaidRegistrationByPhone(input.phone);
+  if (existing) {
+    return { registration: existing, created: false as const, skipped: "already_registered" as const };
+  }
+
+  const slots = await getPicnicSlotStatus();
+  if (slots.paid >= PICNIC_CAPACITY) {
+    throw new Error("Registration is closed. All 30 slots are taken.");
+  }
+
+  const now = new Date().toISOString();
+  const reference = `lc_picnic_comp_${randomBytes(10).toString("hex")}`;
+
+  const participant = await addParticipant({
+    eventId: PICNIC_EVENT_ID,
+    fullName: input.fullName.trim(),
+    phone: input.phone.trim(),
+    whatsapp: input.whatsapp?.trim(),
+    paymentStatus: "complimentary",
+  });
+
+  try {
+    const member = await ensureMemberFromParticipant({
+      fullName: input.fullName.trim(),
+      phone: input.phone.trim(),
+      whatsapp: input.whatsapp?.trim(),
+    });
+    if (member && input.residence?.trim() && !member.bio?.trim()) {
+      await updateMember(member.id, {
+        bio: `Lives in: ${input.residence.trim()}`,
+      });
+    }
+  } catch (err) {
+    console.error("Directory sync after complimentary picnic seat failed:", err);
+  }
+
+  const registration: EventRegistration = {
+    id: `reg_${randomBytes(8).toString("hex")}`,
+    eventId: PICNIC_EVENT_ID,
+    fullName: input.fullName.trim(),
+    email: input.email.trim().toLowerCase(),
+    phone: input.phone.trim(),
+    residence: input.residence.trim() || "Link Circle admin",
+    whatsapp: input.whatsapp?.trim() || undefined,
+    bringItem: input.bringItem.trim() || "Admin / hosting support",
+    amountKobo: input.amountKobo ?? 0,
+    currency: "NGN",
+    status: "paid",
+    paystackReference: reference,
+    participantId: participant.id,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  if (isSupabaseConfigured()) {
+    const sb = getSupabaseAdmin();
+    const { error } = await sb
+      .from("event_registrations")
+      .insert(toRow(registration));
+    if (error) throw new Error(`Failed to create complimentary seat: ${error.message}`);
+  } else {
+    const list = await readLocal();
+    list.push(registration);
+    await writeLocal(list);
+  }
+
+  return {
+    registration: { ...registration, passToken: participant.passToken },
+    created: true as const,
+    skipped: null,
+  };
+}
+
+export async function registerComplimentaryAdmins(
+  seats: PicnicAdminSeat[] = PICNIC_ADMIN_COMPLIMENTARY_SEATS,
+) {
+  const results: Array<{
+    fullName: string;
+    phone: string;
+    status: "created" | "skipped" | "error";
+    reason?: string;
+    registrationId?: string;
+  }> = [];
+
+  for (const seat of seats) {
+    if (seat.skipAuto) {
+      results.push({
+        fullName: seat.fullName,
+        phone: seat.phone || "(none)",
+        status: "skipped",
+        reason: "Already paid / not auto-comped (founder)",
+      });
+      continue;
+    }
+    if (!seat.phone?.trim()) {
+      results.push({
+        fullName: seat.fullName,
+        phone: "(missing)",
+        status: "skipped",
+        reason: "No phone on file — add one complimentary seat manually",
+      });
+      continue;
+    }
+    try {
+      const result = await createComplimentaryRegistration({
+        fullName: seat.fullName,
+        email: seat.email,
+        phone: seat.phone,
+        residence: seat.residence || "Link Circle admin",
+        bringItem: seat.bringItem || "Admin / hosting support",
+      });
+      if (result.created) {
+        results.push({
+          fullName: seat.fullName,
+          phone: seat.phone,
+          status: "created",
+          registrationId: result.registration.id,
+        });
+      } else {
+        results.push({
+          fullName: seat.fullName,
+          phone: seat.phone,
+          status: "skipped",
+          reason: "Already has a paid picnic seat",
+          registrationId: result.registration.id,
+        });
+      }
+    } catch (err) {
+      results.push({
+        fullName: seat.fullName,
+        phone: seat.phone,
+        status: "error",
+        reason: err instanceof Error ? err.message : "Failed",
+      });
+    }
+  }
+
+  return results;
 }
 
 /** Idempotent: verify payment succeeded and provision pass + directory member. */

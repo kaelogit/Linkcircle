@@ -261,6 +261,17 @@ export const COORDINATORS: Coordinator[] = [
     accent: "#e85d4c",
     photo: "/team/aremu-barakat.png",
   },
+  {
+    id: "admin-kiel",
+    name: "Kiel Tee",
+    role: "Admin",
+    bio: "Link Circle admin helping members feel welcome, stay connected, and show up for community hangouts and programs along the Ajah → Eleko corridor.",
+    quote:
+      "Community works when people show up for each other. Link Circle is that space — belonging, connection, and real-life support.",
+    isFounder: false,
+    initials: "KT",
+    accent: "#2f5d50",
+  },
 ];
 
 export function slugify(text: string) {

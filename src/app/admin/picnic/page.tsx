@@ -188,8 +188,8 @@ export default function AdminPicnicRegistrationsPage() {
         <h2 className="font-display text-xl">Complimentary admin seats</h2>
         <p className="mt-2 text-sm text-white/45">
           Free seats still count down the 30. Founder (you) is skipped if already
-          paid. Kiel Tee is on the auto list with 09133263052 — add other admin
-          phones with the form below.
+          paid. Elvis, Aalliyah, Omolara, Aremu, and Kiel are on the auto list —
+          open this page or click the button to add any missing seats.
         </p>
         <button
           type="button"

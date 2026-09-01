@@ -9,11 +9,11 @@ import { ISLAND_CAMP_EVENT_SLUG } from "@/lib/island-camp";
 export const metadata: Metadata = {
   title: "Register · LC Island Camp",
   description:
-    "LC Island Camp at Tarkwa Bay — 3–4 October 2026. ₦23,000 · 30 slots · Link Circle community only.",
+    "LC Island Camp at Tarkwa Bay. 3 to 4 October 2026. ₦23,000. 30 slots. Link Circle community only.",
   openGraph: {
     title: "LC Island Camp · Tarkwa Bay",
     description:
-      "Boat in. Camp out. Bonfire under the stars. 3–4 October 2026 · ₦23,000",
+      "Boat in. Camp out. Bonfire under the stars. 3 to 4 October 2026. ₦23,000.",
     url: `${SITE.url}/events/${ISLAND_CAMP_EVENT_SLUG}/register`,
     siteName: SITE.name,
     locale: "en_NG",

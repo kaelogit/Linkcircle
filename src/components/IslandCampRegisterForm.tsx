@@ -7,7 +7,9 @@ import {
   ISLAND_CAMP_AMOUNT_NAIRA,
   ISLAND_CAMP_CAPACITY,
   ISLAND_CAMP_CAPACITY_PER_GENDER,
+  ISLAND_CAMP_EVENT_SLUG,
 } from "@/lib/island-camp";
+import { IslandCampMoreInfo } from "@/components/IslandCampMoreInfo";
 
 type SlotStatus = {
   capacity: number;
@@ -130,7 +132,7 @@ export function IslandCampRegisterForm() {
                 Slots confirmed
               </p>
               <p className="font-display mt-2 text-5xl tabular-nums text-ink">
-                {slots ? slots.paid : "—"}
+                {slots ? slots.paid : "..."}
                 <span className="ml-2 text-2xl text-ink/40">
                   / {ISLAND_CAMP_CAPACITY}
                 </span>
@@ -160,7 +162,7 @@ export function IslandCampRegisterForm() {
                 Male slots left
               </p>
               <p className="font-display mt-1 text-2xl tabular-nums">
-                {slots?.male.remaining ?? "—"}
+                {slots?.male.remaining ?? "..."}
                 <span className="text-base text-ink/35">
                   {" "}
                   / {ISLAND_CAMP_CAPACITY_PER_GENDER}
@@ -172,7 +174,7 @@ export function IslandCampRegisterForm() {
                 Female slots left
               </p>
               <p className="font-display mt-1 text-2xl tabular-nums">
-                {slots?.female.remaining ?? "—"}
+                {slots?.female.remaining ?? "..."}
                 <span className="text-base text-ink/35">
                   {" "}
                   / {ISLAND_CAMP_CAPACITY_PER_GENDER}
@@ -187,66 +189,16 @@ export function IslandCampRegisterForm() {
           </p>
         </div>
 
-        <div
-          className="rounded-[1.75rem] p-6 text-foam sm:p-8"
-          style={{
-            background:
-              "linear-gradient(145deg, #0a1628 0%, #1a3a5c 40%, #0d4d4a 70%, #790720 100%)",
-          }}
-        >
-          <p className="text-sm uppercase tracking-[0.22em] text-sand/80">
-            Important information
-          </p>
-          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-foam/80">
-            <li>
-              <strong className="text-foam">Community only.</strong> Link Circle
-              members — we verify your WhatsApp display name or group number.
-            </li>
-            <li>
-              Meet at the jetty by <strong className="text-foam">1:00pm</strong>.
-              Camp starts <strong className="text-foam">2:00pm</strong>. Last
-              boat crossing to Tarkwa Bay is around{" "}
-              <strong className="text-foam">5:00pm</strong>.
-            </li>
-            <li>
-              ₦23,000 covers tent, cabana, drinks (soft drinks, water, juice,
-              alcohol &amp; red wine), and bonfire. Food and transport are{" "}
-              <strong className="text-foam">not</strong> included.
-            </li>
-            <li>
-              Jetty details shared in WhatsApp after payment. Transport is
-              roughly ₦2,500 each way — you pay at the terminal.
-            </li>
-            <li>No refunds. Payment confirms your slot.</li>
-          </ul>
-        </div>
+        <IslandCampMoreInfo />
 
-        <div className="rounded-[1.75rem] border border-ink/10 bg-mist/50 p-6 sm:p-8">
-          <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
-            Tents (2 per tent)
-          </p>
-          <div className="mt-4 space-y-3 text-sm leading-relaxed text-ink-soft">
-            <p>
-              Everyone registers on their own. Tents sleep{" "}
-              <strong className="text-ink">two people</strong>. Arrange your
-              tent-mate before or after you pay — we don&apos;t assign partners
-              on the form.
-            </p>
-            <ul className="list-inside list-disc space-y-2 pl-1">
-              <li>Same-gender members can share a tent.</li>
-              <li>
-                Couples who are both in Link Circle can share a tent.
-              </li>
-              <li>
-                Your tent-mate must also be registered and paid for this camp.
-              </li>
-            </ul>
-            <p className="text-ink/55">
-              Pairing is between members. Sort plans with your tent-mate
-              directly.
-            </p>
-          </div>
-        </div>
+        <p className="text-center text-sm text-ink-soft">
+          <Link
+            href={`/events/${ISLAND_CAMP_EVENT_SLUG}`}
+            className="font-semibold text-lagoon underline-offset-4 hover:underline"
+          >
+            Full event details
+          </Link>
+        </p>
       </div>
 
       <div className="rounded-[1.75rem] border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
@@ -348,7 +300,7 @@ export function IslandCampRegisterForm() {
                       <span className="text-xs text-ink/45">
                         {full
                           ? "Full"
-                          : `${remaining ?? "—"} left`}
+                          : `${remaining ?? "..."} left`}
                       </span>
                     </label>
                   );

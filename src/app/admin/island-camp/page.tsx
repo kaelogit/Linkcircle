@@ -98,11 +98,11 @@ export default function AdminIslandCampPage() {
                 <div>
                   <p className="font-medium">{r.fullName}</p>
                   <p className="text-sm text-white/45">
-                    {r.phone} · {r.gender ?? "—"}
+                    {r.phone} · {r.gender ?? "n/a"}
                   </p>
                   <p className="text-sm text-white/35">{r.email}</p>
                   <p className="mt-1 text-sm text-[#d9c4a4]">
-                    WhatsApp: {r.communityIdentity ?? "—"}
+                    WhatsApp: {r.communityIdentity ?? "n/a"}
                   </p>
                 </div>
                 <div className="text-right text-xs">

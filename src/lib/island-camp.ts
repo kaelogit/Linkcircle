@@ -1,4 +1,4 @@
-/** LC Island Camp — Tarkwa Bay overnight camping */
+/** LC Island Camp: Tarkwa Bay overnight camping */
 export const ISLAND_CAMP_EVENT_ID = "evt_island_camp_1003";
 export const ISLAND_CAMP_EVENT_SLUG = "lc-island-camp-oct-3";
 export const ISLAND_CAMP_CAPACITY = 30;

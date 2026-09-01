@@ -261,7 +261,7 @@ export async function finalizePaidIslandCampRegistration(reference: string) {
     };
     await saveRegistration(failed);
     throw new Error(
-      `Sorry — all ${gender} slots filled while checkout was open. Contact an admin.`,
+      `Sorry, all ${gender} slots filled while checkout was open. Contact an admin.`,
     );
   }
 
@@ -276,7 +276,7 @@ export async function finalizePaidIslandCampRegistration(reference: string) {
     };
     await saveRegistration(failed);
     throw new Error(
-      "Sorry — all 30 slots filled while checkout was open. Contact an admin.",
+      "Sorry, all 30 slots filled while checkout was open. Contact an admin.",
     );
   }
 

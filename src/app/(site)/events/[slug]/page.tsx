@@ -8,6 +8,7 @@ import {
   ISLAND_CAMP_EVENT_SLUG,
   ISLAND_CAMP_AMOUNT_NAIRA,
 } from "@/lib/island-camp";
+import { IslandCampMoreInfo } from "@/components/IslandCampMoreInfo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -104,6 +105,12 @@ export default async function EventDetailPage({ params }: Props) {
                 ))}
               </ul>
             </>
+          )}
+
+          {isUpcoming && event.slug === ISLAND_CAMP_EVENT_SLUG && (
+            <div className="mt-10">
+              <IslandCampMoreInfo />
+            </div>
           )}
 
           {event.dumps.length > 0 ? (

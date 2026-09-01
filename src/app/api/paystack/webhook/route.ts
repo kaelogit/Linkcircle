@@ -5,7 +5,7 @@ import {
   getRegistrationByReference,
   markRegistrationFailed,
 } from "@/lib/registrations";
-import { finalizePaidIslandCampRegistration } from "@/lib/island-camp-registrations";
+import { finalizePaidIslandCampRegistration, islandCampPaymentAmountKobo } from "@/lib/island-camp-registrations";
 import { verifyPaystackPayment } from "@/lib/paystack";
 import { PICNIC_AMOUNT_KOBO } from "@/lib/picnic";
 import { isIslandCampReference } from "@/lib/island-camp";
@@ -49,7 +49,10 @@ export async function POST(request: Request) {
 
       if (isIslandCampReference(reference)) {
         const reg = await getRegistrationByReference(reference);
-        if (reg && verified.amount >= reg.amountKobo) {
+        const minAmount = reg
+          ? islandCampPaymentAmountKobo(reg, reference)
+          : 0;
+        if (reg && verified.amount >= minAmount) {
           await finalizePaidIslandCampRegistration(reference);
         }
       } else {

@@ -59,8 +59,10 @@ export const ISLAND_CAMP_LOGISTICS = [
 export const ISLAND_CAMP_PAYMENT = [
   "Link Circle community members only.",
   "Your WhatsApp display name or group number is verified during registration.",
-  "₦23,000 confirms your slot. Paystack processing fee applies at checkout.",
-  "No refunds. Registration closes 24 September or when all 30 slots are filled.",
+  "Pay ₦23,000 in full, or pay 50% deposit now and balance before 24 September.",
+  "Paystack processing fee applies on each payment.",
+  "Deposit is non-refundable. Balance must be paid before the deadline or your slot is forfeited.",
+  "Registration closes 24 September or when all 30 slots are filled.",
 ];
 
 export const ISLAND_CAMP_TENT_INTRO =

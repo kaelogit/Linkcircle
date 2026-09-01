@@ -60,6 +60,9 @@ export async function POST(request: Request) {
     const gender = String(body.gender ?? "").trim();
     const communityIdentity = String(body.communityIdentity ?? "").trim();
     const waiverAccepted = Boolean(body.waiverAccepted);
+    const paymentPlanRaw = String(body.paymentPlan ?? "full").trim();
+    const paymentPlan =
+      paymentPlanRaw === "deposit" ? ("deposit" as const) : ("full" as const);
 
     if (!fullName || !email || !phone || !communityIdentity) {
       return NextResponse.json(
@@ -99,6 +102,7 @@ export async function POST(request: Request) {
       gender,
       communityIdentity,
       waiverAccepted,
+      paymentPlan,
     });
 
     const origin = siteOriginFromRequest(request);

@@ -6,6 +6,7 @@ import {
 } from "@/lib/registrations";
 import {
   finalizePaidIslandCampRegistration,
+  islandCampPaymentAmountKobo,
 } from "@/lib/island-camp-registrations";
 import {
   siteOriginFromRequest,
@@ -45,37 +46,55 @@ export async function GET(request: Request) {
     try {
       const verified = await verifyPaystackPayment(reference);
       const reg = await getRegistrationByReference(reference);
-      const minAmount = reg?.amountKobo ?? 0;
+      const minAmount = reg
+        ? islandCampPaymentAmountKobo(reg, reference)
+        : 0;
 
       if (verified.status !== "success") {
-        await markRegistrationFailed(reference);
-        return NextResponse.redirect(
-          `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=payment_failed`,
-        );
+        if (!reg || reg.status === "pending") {
+          await markRegistrationFailed(reference);
+        }
+        const failTarget =
+          reg?.paymentPlan === "deposit" && reg.balanceReference === reference
+            ? `${origin}/register/island-camp/balance?ref=${encodeURIComponent(reference)}&error=payment_failed`
+            : `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=payment_failed`;
+        return NextResponse.redirect(failTarget);
       }
 
       if (verified.amount < minAmount) {
-        await markRegistrationFailed(reference);
-        return NextResponse.redirect(
-          `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=amount`,
-        );
+        if (!reg || reg.status === "pending") {
+          await markRegistrationFailed(reference);
+        }
+        const amountTarget =
+          reg?.balanceReference === reference
+            ? `${origin}/register/island-camp/balance?ref=${encodeURIComponent(reference)}&error=amount`
+            : `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=amount`;
+        return NextResponse.redirect(amountTarget);
       }
 
-      await finalizePaidIslandCampRegistration(reference);
+      const result = await finalizePaidIslandCampRegistration(reference);
+      if (result.status === "deposit_paid") {
+        const balanceRef = result.balanceReference ?? reference;
+        return NextResponse.redirect(
+          `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}&deposit=1&balance=${encodeURIComponent(balanceRef)}`,
+        );
+      }
       return NextResponse.redirect(
         `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}`,
       );
     } catch (err) {
       console.error("Island camp callback error:", err);
       const reg = await getRegistrationByReference(reference).catch(() => null);
-      if (reg?.status === "paid") {
+      if (reg?.status === "paid" || reg?.status === "deposit_paid") {
         return NextResponse.redirect(
-          `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}`,
+          `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}${reg.status === "deposit_paid" ? "&deposit=1" : ""}`,
         );
       }
-      return NextResponse.redirect(
-        `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=verify`,
-      );
+      const verifyTarget =
+        reg?.balanceReference === reference
+          ? `${origin}/register/island-camp/balance?ref=${encodeURIComponent(reference)}&error=verify`
+          : `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=verify`;
+      return NextResponse.redirect(verifyTarget);
     }
   }
 

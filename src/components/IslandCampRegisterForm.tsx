@@ -15,6 +15,8 @@ type SlotStatus = {
   capacity: number;
   capacityPerGender: number;
   paid: number;
+  depositPaid?: number;
+  slotsTaken?: number;
   male: { paid: number; remaining: number; full: boolean };
   female: { paid: number; remaining: number; full: boolean };
   closed: boolean;
@@ -23,6 +25,10 @@ type SlotStatus = {
   baseAmountNaira: number;
   paystackFeeNaira: number;
   totalAmountNaira: number;
+  depositBaseNaira?: number;
+  depositFeeNaira?: number;
+  depositTotalNaira?: number;
+  balanceTotalNaira?: number;
 };
 
 const ERROR_COPY: Record<string, string> = {
@@ -41,6 +47,7 @@ export function IslandCampRegisterForm() {
   const [gender, setGender] = useState<"male" | "female" | "">("");
   const [communityIdentity, setCommunityIdentity] = useState("");
   const [waiverAccepted, setWaiverAccepted] = useState(false);
+  const [paymentPlan, setPaymentPlan] = useState<"full" | "deposit">("full");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,10 +82,8 @@ export function IslandCampRegisterForm() {
 
   const progress = useMemo(() => {
     if (!slots) return 0;
-    return Math.min(
-      100,
-      Math.round((slots.paid / ISLAND_CAMP_CAPACITY) * 100),
-    );
+    const taken = slots.slotsTaken ?? slots.paid;
+    return Math.min(100, Math.round((taken / ISLAND_CAMP_CAPACITY) * 100));
   }, [slots]);
 
   const closesLabel = slots
@@ -105,6 +110,7 @@ export function IslandCampRegisterForm() {
           gender,
           communityIdentity,
           waiverAccepted,
+          paymentPlan,
         }),
       });
       const data = await res.json();
@@ -118,8 +124,15 @@ export function IslandCampRegisterForm() {
   }
 
   const totalPay =
-    slots?.totalAmountNaira ?? ISLAND_CAMP_AMOUNT_NAIRA + Math.ceil(452);
-  const feePay = slots?.paystackFeeNaira ?? 452;
+    paymentPlan === "deposit"
+      ? slots?.depositTotalNaira ?? Math.ceil(ISLAND_CAMP_AMOUNT_NAIRA / 2) + 226
+      : slots?.totalAmountNaira ?? ISLAND_CAMP_AMOUNT_NAIRA + Math.ceil(452);
+  const feePay =
+    paymentPlan === "deposit"
+      ? slots?.depositFeeNaira ?? 226
+      : slots?.paystackFeeNaira ?? 452;
+  const balancePay = slots?.balanceTotalNaira ?? totalPay;
+  const slotsConfirmed = slots?.slotsTaken ?? slots?.paid ?? 0;
 
   return (
     <div className="grid gap-8 pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:pb-0">
@@ -146,11 +159,69 @@ export function IslandCampRegisterForm() {
               <div>
                 <h2 className="font-display text-2xl">Book your slot</h2>
                 <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-                  Pay ₦{totalPay.toLocaleString("en-NG")} total via Paystack
-                  (includes ~₦{feePay.toLocaleString("en-NG")} processing fee).
-                  Your name goes on the camp list after payment.
+                  Pay in full or 50% deposit now. Paystack fee applies on each
+                  payment. Your name goes on the camp list after full payment,
+                  or after deposit while you clear the balance.
                 </p>
               </div>
+
+              <fieldset>
+                <legend className="text-sm text-ink/50">Payment option</legend>
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                  <label
+                    className={`flex cursor-pointer flex-col rounded-xl border px-4 py-4 transition ${
+                      paymentPlan === "full"
+                        ? "border-lagoon bg-lagoon/10"
+                        : "border-ink/15 bg-mist/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentPlan"
+                      value="full"
+                      checked={paymentPlan === "full"}
+                      onChange={() => setPaymentPlan("full")}
+                      className="sr-only"
+                    />
+                    <span className="font-medium text-ink">Pay in full</span>
+                    <span className="mt-1 text-sm text-lagoon">
+                      ₦{(slots?.totalAmountNaira ?? totalPay).toLocaleString("en-NG")}
+                    </span>
+                    <span className="mt-1 text-xs text-ink/45">
+                      One payment, fully confirmed
+                    </span>
+                  </label>
+                  <label
+                    className={`flex cursor-pointer flex-col rounded-xl border px-4 py-4 transition ${
+                      paymentPlan === "deposit"
+                        ? "border-lagoon bg-lagoon/10"
+                        : "border-ink/15 bg-mist/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentPlan"
+                      value="deposit"
+                      checked={paymentPlan === "deposit"}
+                      onChange={() => setPaymentPlan("deposit")}
+                      className="sr-only"
+                    />
+                    <span className="font-medium text-ink">50% deposit</span>
+                    <span className="mt-1 text-sm text-lagoon">
+                      ₦{(slots?.depositTotalNaira ?? totalPay).toLocaleString("en-NG")} now
+                    </span>
+                    <span className="mt-1 text-xs text-ink/45">
+                      + ₦{balancePay.toLocaleString("en-NG")} balance by {closesLabel}
+                    </span>
+                  </label>
+                </div>
+                {paymentPlan === "deposit" && (
+                  <p className="mt-2 text-xs leading-relaxed text-amber-800/80">
+                    Deposit is non-refundable. Balance must be paid before{" "}
+                    {closesLabel} or your slot is forfeited.
+                  </p>
+                )}
+              </fieldset>
 
               {error && (
                 <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -270,7 +341,9 @@ export function IslandCampRegisterForm() {
               >
                 {busy
                   ? "Redirecting to Paystack…"
-                  : `Pay ₦${totalPay.toLocaleString("en-NG")} & book slot`}
+                  : paymentPlan === "deposit"
+                    ? `Pay ₦${totalPay.toLocaleString("en-NG")} deposit`
+                    : `Pay ₦${totalPay.toLocaleString("en-NG")} & book slot`}
               </button>
 
               {genderFull && gender && (
@@ -293,7 +366,7 @@ export function IslandCampRegisterForm() {
                 Slots confirmed
               </p>
               <p className="font-display mt-2 text-4xl tabular-nums text-ink sm:text-5xl">
-                {slots ? slots.paid : "..."}
+                {slots ? slotsConfirmed : "..."}
                 <span className="ml-2 text-xl text-ink/40 sm:text-2xl">
                   / {ISLAND_CAMP_CAPACITY}
                 </span>
@@ -351,6 +424,15 @@ export function IslandCampRegisterForm() {
         </div>
 
         <IslandCampMoreInfo />
+
+        <p className="text-center text-sm text-ink-soft">
+          <Link
+            href="/register/island-camp/balance"
+            className="font-semibold text-lagoon underline-offset-4 hover:underline"
+          >
+            Already paid a deposit? Pay your balance
+          </Link>
+        </p>
 
         <p className="text-center text-sm text-ink-soft">
           <Link

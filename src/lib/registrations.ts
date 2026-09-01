@@ -22,8 +22,11 @@ function phoneMatchKey(phone: string) {
 export type RegistrationStatus =
   | "pending"
   | "paid"
+  | "deposit_paid"
   | "failed"
   | "abandoned";
+
+export type IslandCampPaymentPlan = "full" | "deposit";
 
 export type EventRegistration = {
   id: string;
@@ -41,6 +44,11 @@ export type EventRegistration = {
   currency: string;
   status: RegistrationStatus;
   paystackReference: string;
+  paymentPlan?: IslandCampPaymentPlan;
+  amountPaidKobo?: number;
+  balanceDueKobo?: number;
+  balanceReference?: string;
+  balanceReminderSentAt?: string;
   participantId?: string;
   createdAt: string;
   updatedAt: string;
@@ -62,6 +70,11 @@ export type RegistrationRow = {
   currency: string;
   status: RegistrationStatus;
   paystack_reference: string;
+  payment_plan: IslandCampPaymentPlan | null;
+  amount_paid_kobo: number;
+  balance_due_kobo: number;
+  balance_reference: string | null;
+  balance_reminder_sent_at: string | null;
   participant_id: string | null;
   created_at: string;
   updated_at: string;
@@ -86,6 +99,11 @@ function fromRow(row: RegistrationRow): EventRegistration {
     currency: row.currency,
     status: row.status,
     paystackReference: row.paystack_reference,
+    paymentPlan: row.payment_plan ?? undefined,
+    amountPaidKobo: row.amount_paid_kobo ?? 0,
+    balanceDueKobo: row.balance_due_kobo ?? 0,
+    balanceReference: row.balance_reference ?? undefined,
+    balanceReminderSentAt: row.balance_reminder_sent_at ?? undefined,
     participantId: row.participant_id ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -109,6 +127,11 @@ function toRow(r: EventRegistration): RegistrationRow {
     currency: r.currency,
     status: r.status,
     paystack_reference: r.paystackReference,
+    payment_plan: r.paymentPlan ?? null,
+    amount_paid_kobo: r.amountPaidKobo ?? 0,
+    balance_due_kobo: r.balanceDueKobo ?? 0,
+    balance_reference: r.balanceReference ?? null,
+    balance_reminder_sent_at: r.balanceReminderSentAt ?? null,
     participant_id: r.participantId ?? null,
     created_at: r.createdAt,
     updated_at: r.updatedAt,
@@ -152,12 +175,19 @@ export async function getRegistrationByReference(reference: string) {
     const { data, error } = await sb
       .from("event_registrations")
       .select("*")
-      .eq("paystack_reference", reference)
+      .or(
+        `paystack_reference.eq.${reference},balance_reference.eq.${reference}`,
+      )
       .maybeSingle();
     if (error) throw new Error(error.message);
     return data ? fromRow(data as RegistrationRow) : null;
   }
-  return (await readLocal()).find((r) => r.paystackReference === reference) ?? null;
+  return (
+    (await readLocal()).find(
+      (r) =>
+        r.paystackReference === reference || r.balanceReference === reference,
+    ) ?? null
+  );
 }
 
 export async function getPicnicSlotStatus(eventId = PICNIC_EVENT_ID) {
@@ -506,7 +536,13 @@ export async function reconcilePendingPicnicPayments() {
 
 export async function markRegistrationFailed(reference: string) {
   const existing = await getRegistrationByReference(reference);
-  if (!existing || existing.status === "paid") return existing;
+  if (
+    !existing ||
+    existing.status === "paid" ||
+    existing.status === "deposit_paid"
+  ) {
+    return existing;
+  }
   const failed: EventRegistration = {
     ...existing,
     status: "failed",

@@ -40,7 +40,10 @@ function BookSlotCard({
       <p className="font-display mt-3 text-3xl text-ink">
         ₦{ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")}
       </p>
-      <p className="mt-1 text-xs text-ink/45">+ Paystack fee · no refunds</p>
+      <p className="mt-1 text-xs text-ink/45">
+        From ₦{(ISLAND_CAMP_AMOUNT_NAIRA / 2).toLocaleString("en-NG")} deposit
+        or pay in full
+      </p>
       {slots && (
         <dl className="mt-5 space-y-2 border-t border-ink/10 pt-5 text-sm">
           <div className="flex justify-between gap-4">
@@ -52,9 +55,9 @@ function BookSlotCard({
             <dd className="font-medium">{slots.female.remaining}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-ink/45">Confirmed</dt>
+            <dt className="text-ink/45">Slots taken</dt>
             <dd className="font-medium">
-              {slots.paid} / {slots.capacity}
+              {slots.slotsTaken} / {slots.capacity}
             </dd>
           </div>
         </dl>
@@ -178,8 +181,9 @@ export async function IslandCampLanding({ event, isUpcoming }: Props) {
                 </span>
               </p>
               <p className="mt-2 text-sm leading-relaxed text-ink/50">
-                + ~₦{feeNaira.toLocaleString("en-NG")} Paystack fee at checkout
-                (₦{totalNaira.toLocaleString("en-NG")} total)
+                Pay in full (~₦{totalNaira.toLocaleString("en-NG")} with Paystack
+                fee), or 50% deposit now and balance before 24 September. Fee
+                applies on each payment.
               </p>
               <p className="mt-5 text-sm font-medium leading-relaxed text-ink sm:mt-6">
                 30 slots · 15 male / 15 female · Link Circle community only

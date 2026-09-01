@@ -299,3 +299,17 @@ export function isUpcomingStatus(status: EventStatus) {
 export function isPastStatus(status: EventStatus) {
   return status === "ended";
 }
+
+/** True when the event date has passed or status is ended. */
+export function isEventEnded(event: { status: EventStatus; endsAt: string }) {
+  if (event.status === "ended") return true;
+  if (event.status === "draft") return false;
+  return new Date(event.endsAt).getTime() < Date.now();
+}
+
+/** True when the event is still open for promotion / registration. */
+export function isEventUpcoming(event: { status: EventStatus; endsAt: string }) {
+  if (event.status === "draft" || event.status === "ended") return false;
+  if (new Date(event.endsAt).getTime() < Date.now()) return false;
+  return event.status === "upcoming" || event.status === "live";
+}

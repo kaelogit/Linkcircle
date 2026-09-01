@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPastEvents, getUpcomingEvents, readEvents } from "@/lib/events";
-import { formatEventRange } from "@/lib/site";
+import { formatEventRange, isEventEnded } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -16,7 +16,7 @@ export default async function EventsPage() {
     readEvents(),
   ]);
   const pastOnly = past.filter(
-    (e) => e.status === "ended" || !upcoming.find((u) => u.id === e.id),
+    (e) => isEventEnded(e) || !upcoming.find((u) => u.id === e.id),
   );
   const dumpsCount = all.reduce((n, e) => n + e.dumps.length, 0);
 
@@ -30,8 +30,8 @@ export default async function EventsPage() {
           Past dumps. New drops. Real hangouts.
         </h1>
         <p className="mt-5 max-w-2xl text-base text-ink-soft sm:text-lg">
-          From networking picnics to football days, beach hangouts, and house
-          parties — each event stands on its own.
+          From networking picnics to beach hangouts and house parties — each
+          event stands on its own.
           {dumpsCount > 0
             ? ` ${dumpsCount} dump photos & videos live now.`
             : ""}

@@ -167,7 +167,7 @@
     "capacity": 30,
     "coverGradient": "linear-gradient(145deg, #1a2e24 0%, #2d4a3a 28%, #790720 72%, #d4a24a 100%)",
     "coverImage": "/events/networking-picnic-aug-29.png",
-    "status": "upcoming",
+    "status": "ended",
     "whatsIncluded": [
       "Networking picnic with Link Circle members",
       "Guest speaker: Mrs. Adetoun Irukera on Emotional Intelligence (EQ)",
@@ -181,30 +181,5 @@
     "dumps": [],
     "createdAt": "2026-08-09T16:00:00.000Z",
     "updatedAt": "2026-08-11T12:00:00.000Z"
-  },
-  {
-    "id": "evt_mixed_football_0830",
-    "slug": "mixed-football-aug-30",
-    "title": "Mixed Football Games",
-    "tagline": "Males & females. One pitch. Who sabi play ball pass?",
-    "description": "Sunday, 30th August is pure Link Circle energy on the grass. Mixed Football Games — males and females mixed in teams — built for competition, connection, banter, and good vibes.\n\nAll skill levels welcome. Whether you came to score, assist, or just enjoy the chaos, show up ready to play. Teamwork. Respect. Fun. Come prove yourself, laugh hard, and leave knowing the circle a little better.\n\nBoots on, hearts open, rivalries friendly. Network. Grow. Belong.",
-    "startsAt": "2026-08-30T15:00:00+01:00",
-    "endsAt": "2026-08-30T19:00:00+01:00",
-    "locationPublic": "Ajah → Eleko (pitch details from admins)",
-    "priceLabel": "Details & registration via admins",
-    "capacity": 40,
-    "coverGradient": "linear-gradient(145deg, #0b1418 0%, #0e2a1a 35%, #1a4d2e 65%, #790720 100%)",
-    "status": "upcoming",
-    "whatsIncluded": [
-      "Mixed teams — males & females together",
-      "Competitive games with room for every skill level",
-      "Banter, good vibes & real-life connection",
-      "Teamwork, respect, and pure Sunday football energy",
-      "Pitch & kickoff details shared by admins"
-    ],
-    "galleryNote": "A standalone Link Circle sports day — all skill levels welcome.",
-    "dumps": [],
-    "createdAt": "2026-08-09T16:00:00.000Z",
-    "updatedAt": "2026-08-11T13:30:00.000Z"
   }
 ]

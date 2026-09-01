@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DumpGallery } from "@/components/DumpGallery";
 import { getEventBySlug } from "@/lib/events";
-import { formatEventRange, isUpcomingStatus } from "@/lib/site";
+import { formatEventRange, isEventUpcoming } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,7 +20,7 @@ export default async function EventDetailPage({ params }: Props) {
   const event = await getEventBySlug(slug);
   if (!event) notFound();
 
-  const isUpcoming = isUpcomingStatus(event.status);
+  const isUpcoming = isEventUpcoming(event);
   const paragraphs = event.description
     .split(/\n\n+/)
     .map((p) => p.trim())

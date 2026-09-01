@@ -36,16 +36,8 @@ export default async function HomePage() {
         month: "short",
       })
     : "";
-  const spotlightHref =
-    spotlight?.slug === "networking-picnic-aug-29"
-      ? "/events/networking-picnic-aug-29/register"
-      : spotlight
-        ? `/events/${spotlight.slug}`
-        : "/events";
-  const spotlightCta =
-    spotlight?.slug === "networking-picnic-aug-29"
-      ? "Register & pay ₦5,000"
-      : "Get details & access";
+  const spotlightHref = spotlight ? `/events/${spotlight.slug}` : "/events";
+  const spotlightCta = "Get details & access";
 
   return (
     <>

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { BRING_OPTIONS } from "@/lib/picnic";
+import { getEventBySlug } from "@/lib/events";
+import { isEventUpcoming } from "@/lib/site";
 import {
   createPendingRegistration,
   listRegistrations,
@@ -29,6 +31,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const event = await getEventBySlug("networking-picnic-aug-29");
+    if (!event || !isEventUpcoming(event)) {
+      return NextResponse.json(
+        { error: "Registration for this event is closed." },
+        { status: 409 },
+      );
+    }
+
     if (!isPaystackConfigured()) {
       return NextResponse.json(
         {

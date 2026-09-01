@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import type { EventDump, EventItem, EventStatus } from "./site";
-import { slugify } from "./site";
+import { slugify, isEventEnded, isEventUpcoming } from "./site";
 import bundledEvents from "../../data/events.json";
 import { readJsonFile, writeJsonFile } from "./json-store";
 import { isSupabaseConfigured, getSupabaseAdmin } from "./supabase";
@@ -107,14 +107,14 @@ export async function getEventBySlug(slug: string) {
 export async function getUpcomingEvents() {
   const list = await readEvents();
   return list
-    .filter((e) => e.status === "upcoming" || e.status === "live")
+    .filter((e) => isEventUpcoming(e))
     .sort((a, b) => +new Date(a.startsAt) - +new Date(b.startsAt));
 }
 
 export async function getPastEvents() {
   const list = await readEvents();
   return list
-    .filter((e) => e.status === "ended" || e.dumps.length > 0)
+    .filter((e) => isEventEnded(e) || e.dumps.length > 0)
     .sort((a, b) => +new Date(b.startsAt) - +new Date(a.startsAt));
 }
 

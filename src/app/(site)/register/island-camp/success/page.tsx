@@ -61,8 +61,8 @@ export default async function IslandCampSuccessPage({ searchParams }: Props) {
         </p>
         <p className="mt-3 text-ink-soft">
           Jetty meet-up details and the full timeline will drop in the Link
-          Circle WhatsApp group. Bring your own food. Sort your tent-mate with
-          them directly.
+          Circle WhatsApp group. Food is on you, but there is plenty to buy on
+          the island. Sort your tent-mate with them directly.
         </p>
 
         {(email || ref) && paid && (

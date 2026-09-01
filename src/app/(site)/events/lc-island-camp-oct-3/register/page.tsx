@@ -69,7 +69,7 @@ export default async function IslandCampRegisterPage() {
         </div>
       </section>
 
-      <section className="section-pad mx-auto max-w-6xl py-10 sm:py-14">
+      <section className="section-pad mx-auto max-w-6xl pb-24 pt-8 sm:pt-12 sm:pb-14">
         {open ? (
           <Suspense
             fallback={<p className="text-ink-soft">Loading registration…</p>}

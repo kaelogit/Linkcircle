@@ -109,3 +109,12 @@ export function siteOriginFromRequest(request: Request) {
   }
   return env.replace(/\/$/, "");
 }
+
+/** Gross kobo to charge so net after Paystack's ~1.5% + ₦100 is at least `netKobo`. */
+export function paystackGrossFromNet(netKobo: number): number {
+  return Math.ceil((netKobo + 10_000) / (1 - 0.015));
+}
+
+export function paystackFeeFromNet(netKobo: number): number {
+  return paystackGrossFromNet(netKobo) - netKobo;
+}

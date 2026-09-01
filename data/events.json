@@ -181,5 +181,32 @@
     "dumps": [],
     "createdAt": "2026-08-09T16:00:00.000Z",
     "updatedAt": "2026-08-11T12:00:00.000Z"
+  },
+  {
+    "id": "evt_island_camp_1003",
+    "slug": "lc-island-camp-oct-3",
+    "title": "LC Island Camp",
+    "tagline": "Boat in. Camp out. Bonfire under the stars at Tarkwa Bay.",
+    "description": "Link Circle is taking the circle offshore.\n\nSaturday 3 October into Sunday 4 October, we camp at Tarkwa Bay — a sheltered island beach in Lagos you reach only by boat. No city noise. Calm water. One big cabana for the whole circle. Tents for two. Drinks flowing. Bonfire dancing into the night.\n\nThis is LC Island Camp: overnight energy, real connection, and content you will want to post. Our Networking Picnic set the bar — this one goes higher.\n\n₦23,000 per slot covers your tent space, cabana access, drinks (soft drinks, water, juice, alcohol and red wine), and the bonfire. Food and transport are on you. Only 30 slots — 15 male, 15 female. Link Circle community members only. Registration closes 24 September or when we fill up.\n\nMeet at the jetty by 1:00pm. Camp starts 2:00pm. Last boat crossing around 5:00pm. Jetty details shared in WhatsApp after you pay.",
+    "startsAt": "2026-10-03T14:00:00+01:00",
+    "endsAt": "2026-10-04T11:00:00+01:00",
+    "locationPublic": "Tarkwa Bay Beach Camp (boat access only)",
+    "priceLabel": "₦23,000 per slot",
+    "capacity": 30,
+    "coverGradient": "linear-gradient(145deg, #0a1628 0%, #1a3a5c 28%, #0d4d4a 55%, #790720 82%, #d4a24a 100%)",
+    "status": "upcoming",
+    "whatsIncluded": [
+      "Overnight camp at Tarkwa Bay Beach Camp",
+      "Tent space (2 per tent)",
+      "Shared cabana for activities & hangout",
+      "Drinks: soft drinks, water, juice, alcohol & red wine",
+      "Bonfire & night vibes",
+      "30 slots · 15 male / 15 female · community only",
+      "₦23,000 · food & transport not included"
+    ],
+    "galleryNote": "Register online · closes 24 September · Link Circle community only.",
+    "dumps": [],
+    "createdAt": "2026-09-01T00:00:00.000Z",
+    "updatedAt": "2026-09-01T00:00:00.000Z"
   }
 ]

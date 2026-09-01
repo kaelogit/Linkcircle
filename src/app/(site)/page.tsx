@@ -3,6 +3,7 @@ import { Reveal } from "@/components/Reveal";
 import { DumpGallery } from "@/components/DumpGallery";
 import { getAllDumps, getUpcomingEvents } from "@/lib/events";
 import { SITE, WEEKLY, formatEventRange } from "@/lib/site";
+import { ISLAND_CAMP_EVENT_SLUG } from "@/lib/island-camp";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +37,16 @@ export default async function HomePage() {
         month: "short",
       })
     : "";
-  const spotlightHref = spotlight ? `/events/${spotlight.slug}` : "/events";
-  const spotlightCta = "Get details & access";
+  const spotlightHref =
+    spotlight?.slug === ISLAND_CAMP_EVENT_SLUG
+      ? `/events/${ISLAND_CAMP_EVENT_SLUG}/register`
+      : spotlight
+        ? `/events/${spotlight.slug}`
+        : "/events";
+  const spotlightCta =
+    spotlight?.slug === ISLAND_CAMP_EVENT_SLUG
+      ? "Register for LC Island Camp"
+      : "Get details & access";
 
   return (
     <>

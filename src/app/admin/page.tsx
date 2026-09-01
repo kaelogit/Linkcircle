@@ -81,6 +81,15 @@ export default function AdminDashboard() {
           </p>
         </Link>
         <Link
+          href="/admin/island-camp"
+          className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
+        >
+          <p className="font-display text-xl">Island Camp</p>
+          <p className="mt-2 text-sm text-white/50">
+            LC Island Camp bookings, gender slots, WhatsApp verify list.
+          </p>
+        </Link>
+        <Link
           href="/admin/picnic"
           className="rounded-2xl border border-white/10 bg-[#12181c] p-5 hover:border-[#790720]/50"
         >

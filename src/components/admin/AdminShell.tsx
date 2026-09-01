@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/participants", label: "Participants" },
   { href: "/admin/members", label: "Directory" },
   { href: "/admin/picnic", label: "Picnic" },
+  { href: "/admin/island-camp", label: "Island Camp" },
   { href: "/admin/coordinators", label: "People" },
   { href: "/admin/scan", label: "Door scan" },
 ];

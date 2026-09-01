@@ -10,6 +10,7 @@ import {
   PICNIC_ADMIN_COMPLIMENTARY_SEATS,
   type PicnicAdminSeat,
 } from "./picnic";
+import type { CampGender } from "./island-camp";
 import { readJsonFile, writeJsonFile } from "./json-store";
 import { normalizePhoneKey } from "./members";
 
@@ -33,6 +34,9 @@ export type EventRegistration = {
   residence: string;
   whatsapp?: string;
   bringItem: string;
+  gender?: CampGender;
+  communityIdentity?: string;
+  waiverAccepted?: boolean;
   amountKobo: number;
   currency: string;
   status: RegistrationStatus;
@@ -51,6 +55,9 @@ export type RegistrationRow = {
   residence: string;
   whatsapp: string | null;
   bring_item: string;
+  gender: CampGender | null;
+  community_identity: string | null;
+  waiver_accepted: boolean;
   amount_kobo: number;
   currency: string;
   status: RegistrationStatus;
@@ -71,7 +78,10 @@ function fromRow(row: RegistrationRow): EventRegistration {
     phone: row.phone,
     residence: row.residence ?? "",
     whatsapp: row.whatsapp ?? undefined,
-    bringItem: row.bring_item,
+    bringItem: row.bring_item ?? "",
+    gender: row.gender ?? undefined,
+    communityIdentity: row.community_identity ?? undefined,
+    waiverAccepted: row.waiver_accepted ?? false,
     amountKobo: row.amount_kobo,
     currency: row.currency,
     status: row.status,
@@ -91,7 +101,10 @@ function toRow(r: EventRegistration): RegistrationRow {
     phone: r.phone,
     residence: r.residence,
     whatsapp: r.whatsapp ?? null,
-    bring_item: r.bringItem,
+    bring_item: r.bringItem ?? "",
+    gender: r.gender ?? null,
+    community_identity: r.communityIdentity ?? null,
+    waiver_accepted: r.waiverAccepted ?? false,
     amount_kobo: r.amountKobo,
     currency: r.currency,
     status: r.status,

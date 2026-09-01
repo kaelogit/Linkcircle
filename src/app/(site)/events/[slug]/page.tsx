@@ -4,6 +4,10 @@ import { notFound } from "next/navigation";
 import { DumpGallery } from "@/components/DumpGallery";
 import { getEventBySlug } from "@/lib/events";
 import { formatEventRange, isEventUpcoming } from "@/lib/site";
+import {
+  ISLAND_CAMP_EVENT_SLUG,
+  ISLAND_CAMP_AMOUNT_NAIRA,
+} from "@/lib/island-camp";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -166,7 +170,22 @@ export default async function EventDetailPage({ params }: Props) {
 
           {isUpcoming ? (
             <div className="mt-8 space-y-3">
-              {event.slug === "networking-picnic-aug-29" ? (
+              {event.slug === ISLAND_CAMP_EVENT_SLUG ? (
+                <>
+                  <p className="text-sm text-ink-soft">
+                    ₦{ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")} per slot
+                    · 30 campers · 15 male / 15 female · Link Circle community
+                    only. Closes 24 September.
+                  </p>
+                  <Link
+                    href={`/events/${ISLAND_CAMP_EVENT_SLUG}/register`}
+                    className="block rounded-full bg-lagoon py-3 text-center text-sm font-semibold text-white"
+                  >
+                    Register &amp; pay ₦
+                    {ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")}
+                  </Link>
+                </>
+              ) : event.slug === "networking-picnic-aug-29" ? (
                 <>
                   <p className="text-sm text-ink-soft">
                     ₦5,000 registration fee · only 30 seats · bring something

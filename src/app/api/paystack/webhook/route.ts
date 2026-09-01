@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import {
   finalizePaidRegistration,
+  getRegistrationByReference,
   markRegistrationFailed,
 } from "@/lib/registrations";
+import { finalizePaidIslandCampRegistration } from "@/lib/island-camp-registrations";
 import { verifyPaystackPayment } from "@/lib/paystack";
 import { PICNIC_AMOUNT_KOBO } from "@/lib/picnic";
+import { isIslandCampReference } from "@/lib/island-camp";
 import { isDonateReference } from "@/lib/donate";
 
 function validSignature(rawBody: string, signature: string | null) {
@@ -40,11 +43,19 @@ export async function POST(request: Request) {
 
     if (event.event === "charge.success") {
       const verified = await verifyPaystackPayment(reference);
-      if (
-        verified.status === "success" &&
-        verified.amount >= PICNIC_AMOUNT_KOBO
-      ) {
-        await finalizePaidRegistration(reference);
+      if (verified.status !== "success") {
+        return NextResponse.json({ ok: true });
+      }
+
+      if (isIslandCampReference(reference)) {
+        const reg = await getRegistrationByReference(reference);
+        if (reg && verified.amount >= reg.amountKobo) {
+          await finalizePaidIslandCampRegistration(reference);
+        }
+      } else {
+        if (verified.amount >= PICNIC_AMOUNT_KOBO) {
+          await finalizePaidRegistration(reference);
+        }
       }
     } else if (
       event.event === "charge.failed" ||

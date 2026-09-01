@@ -5,10 +5,14 @@ import {
   markRegistrationFailed,
 } from "@/lib/registrations";
 import {
+  finalizePaidIslandCampRegistration,
+} from "@/lib/island-camp-registrations";
+import {
   siteOriginFromRequest,
   verifyPaystackPayment,
 } from "@/lib/paystack";
 import { PICNIC_AMOUNT_KOBO } from "@/lib/picnic";
+import { isIslandCampReference, ISLAND_CAMP_EVENT_SLUG } from "@/lib/island-camp";
 import { getParticipantsByEvent } from "@/lib/participants";
 import { isDonateReference } from "@/lib/donate";
 
@@ -21,7 +25,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/donate?error=missing_ref`);
   }
 
-  // Community donations
   if (isDonateReference(reference)) {
     try {
       const verified = await verifyPaystackPayment(reference);
@@ -35,6 +38,44 @@ export async function GET(request: Request) {
     } catch (err) {
       console.error("Donate callback error:", err);
       return NextResponse.redirect(`${origin}/donate?error=verify`);
+    }
+  }
+
+  if (isIslandCampReference(reference)) {
+    try {
+      const verified = await verifyPaystackPayment(reference);
+      const reg = await getRegistrationByReference(reference);
+      const minAmount = reg?.amountKobo ?? 0;
+
+      if (verified.status !== "success") {
+        await markRegistrationFailed(reference);
+        return NextResponse.redirect(
+          `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=payment_failed`,
+        );
+      }
+
+      if (verified.amount < minAmount) {
+        await markRegistrationFailed(reference);
+        return NextResponse.redirect(
+          `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=amount`,
+        );
+      }
+
+      await finalizePaidIslandCampRegistration(reference);
+      return NextResponse.redirect(
+        `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}`,
+      );
+    } catch (err) {
+      console.error("Island camp callback error:", err);
+      const reg = await getRegistrationByReference(reference).catch(() => null);
+      if (reg?.status === "paid") {
+        return NextResponse.redirect(
+          `${origin}/register/island-camp/success?ref=${encodeURIComponent(reference)}`,
+        );
+      }
+      return NextResponse.redirect(
+        `${origin}/events/${ISLAND_CAMP_EVENT_SLUG}/register?error=verify`,
+      );
     }
   }
 

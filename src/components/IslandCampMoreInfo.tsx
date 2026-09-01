@@ -1,41 +1,57 @@
 import {
-  ISLAND_CAMP_IMPORTANT_INFO,
+  ISLAND_CAMP_TENT_INTRO,
   ISLAND_CAMP_TENT_RULES,
-  ISLAND_CAMP_TENT_RULES_INTRO,
+  ISLAND_CAMP_SCHEDULE,
+  ISLAND_CAMP_LOGISTICS,
+  ISLAND_CAMP_PAYMENT,
 } from "@/lib/island-camp-copy";
 
 type Props = {
-  variant?: "full" | "compact";
+  showTents?: boolean;
 };
 
-export function IslandCampMoreInfo({ variant = "full" }: Props) {
+/** Compact blocks for the register page sidebar */
+export function IslandCampMoreInfo({ showTents = true }: Props) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="rounded-[1.5rem] border border-ink/10 bg-mist/50 p-6 sm:p-8">
         <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
-          Important information
+          Schedule
         </p>
-        <ul className="mt-4 space-y-3 text-sm leading-relaxed text-ink-soft sm:text-base">
-          {ISLAND_CAMP_IMPORTANT_INFO.map((item) => (
-            <li key={item} className="flex gap-3">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lagoon" />
-              <span>{item}</span>
-            </li>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {ISLAND_CAMP_SCHEDULE.map((item) => (
+            <div key={item.label} className="rounded-xl bg-white px-3 py-3">
+              <p className="font-display text-lg text-lagoon">{item.time}</p>
+              <p className="text-xs text-ink-soft">{item.label}</p>
+            </div>
           ))}
+        </div>
+        <ul className="mt-4 space-y-2 text-sm text-ink-soft">
+          {[...ISLAND_CAMP_LOGISTICS, ...ISLAND_CAMP_PAYMENT.slice(0, 2)].map(
+            (item) => (
+              <li key={item} className="flex gap-2">
+                <span className="text-lagoon">·</span>
+                {item}
+              </li>
+            ),
+          )}
         </ul>
       </div>
 
-      {variant === "full" && (
+      {showTents && (
         <div className="rounded-[1.5rem] border border-ink/10 bg-white p-6 sm:p-8">
           <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
-            Tents (2 per tent)
+            Tent arrangements
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-ink-soft sm:text-base">
-            {ISLAND_CAMP_TENT_RULES_INTRO}
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+            {ISLAND_CAMP_TENT_INTRO}
           </p>
-          <ul className="mt-4 list-inside list-disc space-y-2 pl-1 text-sm leading-relaxed text-ink-soft sm:text-base">
+          <ul className="mt-3 space-y-2 text-sm text-ink-soft">
             {ISLAND_CAMP_TENT_RULES.map((rule) => (
-              <li key={rule}>{rule}</li>
+              <li key={rule} className="flex gap-2">
+                <span className="text-lagoon">·</span>
+                {rule}
+              </li>
             ))}
           </ul>
         </div>

@@ -11,7 +11,6 @@ import {
   ISLAND_CAMP_ABOUT,
   ISLAND_CAMP_CLOSING,
   ISLAND_CAMP_HERO,
-  ISLAND_CAMP_INCLUDES,
   ISLAND_CAMP_LOGISTICS,
   ISLAND_CAMP_PAYMENT,
   ISLAND_CAMP_SCHEDULE,
@@ -93,11 +92,11 @@ export async function IslandCampLanding({ event, isUpcoming }: Props) {
         </div>
       </section>
 
-      <div className="section-pad mx-auto max-w-6xl">
+      <div className="section-pad mx-auto max-w-6xl pt-16 sm:pt-24">
         <div className="grid gap-14 lg:grid-cols-[1fr_320px] lg:gap-16">
           <div className="min-w-0 space-y-14">
             {/* About */}
-            <section>
+            <section className="pt-2">
               <p className="text-sm uppercase tracking-[0.22em] text-lagoon">
                 About the event
               </p>
@@ -120,26 +119,7 @@ export async function IslandCampLanding({ event, isUpcoming }: Props) {
                 + ~₦{feeNaira.toLocaleString("en-NG")} Paystack fee at checkout
                 (₦{totalNaira.toLocaleString("en-NG")} total)
               </p>
-              <p className="mt-6 text-sm font-semibold uppercase tracking-[0.16em] text-ink/45">
-                Your registration covers
-              </p>
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                {ISLAND_CAMP_INCLUDES.map((item) => (
-                  <li
-                    key={item.label}
-                    className="flex items-center gap-3 rounded-xl bg-white/80 px-4 py-3 text-sm text-ink-soft"
-                  >
-                    <span className="text-xl" aria-hidden>
-                      {item.icon}
-                    </span>
-                    {item.label}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-6 text-sm text-ink-soft">
-                Bring your own food. Arrange your own transport to the jetty.
-              </p>
-              <p className="mt-3 text-sm font-medium text-ink">
+              <p className="mt-6 text-sm font-medium text-ink">
                 30 slots · 15 male / 15 female · Link Circle community only
               </p>
             </section>
@@ -164,7 +144,8 @@ export async function IslandCampLanding({ event, isUpcoming }: Props) {
                 ))}
               </div>
               <p className="mt-5 text-sm text-ink/50">
-                Food &amp; transport not included.
+                Food and transport are not included in your slot. Plenty to buy
+                on the island if you do not bring your own.
               </p>
             </section>
 

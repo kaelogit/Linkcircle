@@ -53,7 +53,7 @@ export const ISLAND_CAMP_LOGISTICS = [
   "Please arrive at the jetty on time. Missing the final crossing may mean you cannot reach the camp.",
   "Jetty details will be shared in the Link Circle WhatsApp group after payment.",
   "Transport to the jetty is approximately ₦2,500 each way, paid separately at the terminal.",
-  "Bring your own food. Whatever you bring is yours.",
+  "Food is not included in your slot. You can bring your own, and there are also plenty of vendors and spots to buy food and snacks on the island.",
 ];
 
 export const ISLAND_CAMP_PAYMENT = [

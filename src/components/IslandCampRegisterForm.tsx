@@ -166,60 +166,86 @@ export function IslandCampRegisterForm() {
               <fieldset>
                 <legend className="text-sm text-ink/50">Payment option</legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                  <label
-                    className={`flex cursor-pointer flex-col rounded-xl border px-4 py-4 transition ${
-                      paymentPlan === "full"
-                        ? "border-lagoon bg-lagoon/10"
-                        : "border-ink/15 bg-mist/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="paymentPlan"
-                      value="full"
-                      checked={paymentPlan === "full"}
-                      onChange={() => setPaymentPlan("full")}
-                      className="sr-only"
-                    />
-                    <span className="font-medium text-ink">Pay in full</span>
-                    <span className="mt-1 text-sm text-lagoon">
-                      ₦{fullTotal.toLocaleString("en-NG")}
-                    </span>
-                    <span className="mt-1 text-xs text-ink/45">
-                      ₦{ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")} + ₦
-                      {fullFee.toLocaleString("en-NG")} fee · one payment
-                    </span>
-                  </label>
-                  <label
-                    className={`flex cursor-pointer flex-col rounded-xl border px-4 py-4 transition ${
-                      paymentPlan === "deposit"
-                        ? "border-lagoon bg-lagoon/10"
-                        : "border-ink/15 bg-mist/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="paymentPlan"
-                      value="deposit"
-                      checked={paymentPlan === "deposit"}
-                      onChange={() => setPaymentPlan("deposit")}
-                      className="sr-only"
-                    />
-                    <span className="font-medium text-ink">50% deposit</span>
-                    <span className="mt-1 text-sm text-lagoon">
-                      ₦{depositTotal.toLocaleString("en-NG")} now
-                    </span>
-                    <span className="mt-1 text-xs text-ink/45">
-                      ₦{(ISLAND_CAMP_AMOUNT_NAIRA / 2).toLocaleString("en-NG")}{" "}
-                      + ₦{depositFee.toLocaleString("en-NG")} fee · then ₦
-                      {balanceTotal.toLocaleString("en-NG")} balance by{" "}
-                      {closesLabel}
-                    </span>
-                    <span className="mt-1 text-xs text-ink/40">
-                      ~₦{splitGrandTotal.toLocaleString("en-NG")} total (two
-                      Paystack fees)
-                    </span>
-                  </label>
+                  {(
+                    [
+                      {
+                        id: "full" as const,
+                        title: "Pay in full",
+                        amount: `₦${fullTotal.toLocaleString("en-NG")}`,
+                        lines: [
+                          `₦${ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")} + ₦${fullFee.toLocaleString("en-NG")} fee · one payment`,
+                        ],
+                      },
+                      {
+                        id: "deposit" as const,
+                        title: "50% deposit",
+                        amount: `₦${depositTotal.toLocaleString("en-NG")} now`,
+                        lines: [
+                          `₦${(ISLAND_CAMP_AMOUNT_NAIRA / 2).toLocaleString("en-NG")} + ₦${depositFee.toLocaleString("en-NG")} fee · then ₦${balanceTotal.toLocaleString("en-NG")} balance by ${closesLabel}`,
+                          `~₦${splitGrandTotal.toLocaleString("en-NG")} total (two Paystack fees)`,
+                        ],
+                      },
+                    ] as const
+                  ).map((option) => {
+                    const selected = paymentPlan === option.id;
+                    return (
+                      <label
+                        key={option.id}
+                        className={`relative flex cursor-pointer flex-col rounded-xl px-4 py-4 transition ${
+                          selected
+                            ? "border-2 border-lagoon bg-lagoon/20 shadow-md ring-2 ring-lagoon/30"
+                            : "border border-ink/15 bg-mist/25 opacity-70 hover:border-ink/25 hover:bg-mist/40 hover:opacity-100"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentPlan"
+                          value={option.id}
+                          checked={selected}
+                          onChange={() => setPaymentPlan(option.id)}
+                          className="sr-only"
+                        />
+                        <span
+                          className={`absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full border-2 ${
+                            selected
+                              ? "border-lagoon bg-lagoon text-white"
+                              : "border-ink/20 bg-white"
+                          }`}
+                          aria-hidden
+                        >
+                          {selected && (
+                            <svg
+                              viewBox="0 0 12 12"
+                              className="h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2.5}
+                            >
+                              <path d="M2 6l3 3 5-5" />
+                            </svg>
+                          )}
+                        </span>
+                        <span
+                          className={`pr-8 ${selected ? "font-semibold text-ink" : "font-medium text-ink/70"}`}
+                        >
+                          {option.title}
+                        </span>
+                        <span
+                          className={`mt-1 text-sm ${selected ? "font-semibold text-lagoon" : "text-lagoon/70"}`}
+                        >
+                          {option.amount}
+                        </span>
+                        {option.lines.map((line) => (
+                          <span
+                            key={line}
+                            className={`mt-1 text-xs ${selected ? "text-ink/60" : "text-ink/40"}`}
+                          >
+                            {line}
+                          </span>
+                        ))}
+                      </label>
+                    );
+                  })}
                 </div>
                 {paymentPlan === "deposit" && (
                   <p className="mt-2 text-xs leading-relaxed text-amber-800/80">

@@ -37,7 +37,8 @@ export const BRING_OPTIONS = [
 
 export type BringOption = (typeof BRING_OPTIONS)[number];
 
-/** LC admins who get a complimentary picnic seat (no Paystack). Skip if already paid. */
+import { LC_ADMIN_CONTACTS } from "./lc-admins";
+
 export type PicnicAdminSeat = {
   fullName: string;
   phone: string;
@@ -48,46 +49,12 @@ export type PicnicAdminSeat = {
   skipAuto?: boolean;
 };
 
-export const PICNIC_ADMIN_COMPLIMENTARY_SEATS: PicnicAdminSeat[] = [
-  {
-    fullName: "Abdulkareem Abdulkareem",
-    phone: "",
-    email: "founder@linkcircle.ng",
-    skipAuto: true,
-  },
-  {
-    fullName: "Chukwuebuka Elvis",
-    phone: "08112759009",
-    email: "elvis@linkcircle.ng",
-    residence: "Link Circle admin",
-    bringItem: "Admin / hosting support",
-  },
-  {
-    fullName: "Mohammed Aalliyah Kaaka",
-    phone: "08112849937",
-    email: "aalliyah@linkcircle.ng",
-    residence: "Link Circle admin",
-    bringItem: "Admin / hosting support",
-  },
-  {
-    fullName: "Fehintade Habibat Omolara",
-    phone: "08108359209",
-    email: "omolara@linkcircle.ng",
-    residence: "Link Circle admin",
-    bringItem: "Admin / hosting support",
-  },
-  {
-    fullName: "Aremu Barakat Ejide",
-    phone: "09077397922",
-    email: "aremu@linkcircle.ng",
-    residence: "Link Circle admin",
-    bringItem: "Admin / hosting support",
-  },
-  {
-    fullName: "Kiel Tee",
-    phone: "09133263052",
-    email: "kiel.tee@linkcircle.ng",
-    residence: "Ajah / Lekki corridor",
-    bringItem: "Admin / hosting support",
-  },
-];
+export const PICNIC_ADMIN_COMPLIMENTARY_SEATS: PicnicAdminSeat[] =
+  LC_ADMIN_CONTACTS.map((admin) => ({
+    fullName: admin.fullName,
+    phone: admin.phone,
+    email: admin.email,
+    residence: admin.residence,
+    bringItem: admin.bringItem,
+    skipAuto: admin.skipPicnicAutoComp,
+  }));

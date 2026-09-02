@@ -13,6 +13,17 @@ import {
   islandCampBalanceUrl,
   whatsappShareUrl,
 } from "@/lib/island-camp-balance";
+import { matchLcAdminByPhone } from "@/lib/lc-admins";
+
+function AdminBadge({ phone }: { phone: string }) {
+  const admin = matchLcAdminByPhone(phone);
+  if (!admin) return null;
+  return (
+    <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-200">
+      LC {admin.role}
+    </span>
+  );
+}
 
 function statusBadge(status: EventRegistration["status"]) {
   if (status === "paid") return "bg-emerald-500/20 text-emerald-200";
@@ -214,7 +225,10 @@ export default function AdminIslandCampPage() {
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-medium">{r.fullName}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium">{r.fullName}</p>
+                        <AdminBadge phone={r.phone} />
+                      </div>
                       <p className="text-sm text-white/45">
                         {r.phone} · {r.gender ?? "n/a"}
                       </p>
@@ -300,7 +314,10 @@ export default function AdminIslandCampPage() {
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium">{r.fullName}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-medium">{r.fullName}</p>
+                    <AdminBadge phone={r.phone} />
+                  </div>
                   <p className="text-sm text-white/45">
                     {r.phone} · {r.gender ?? "n/a"}
                   </p>

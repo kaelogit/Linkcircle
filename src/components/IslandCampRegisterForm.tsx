@@ -123,15 +123,13 @@ export function IslandCampRegisterForm() {
     }
   }
 
-  const totalPay =
-    paymentPlan === "deposit"
-      ? slots?.depositTotalNaira ?? Math.ceil(ISLAND_CAMP_AMOUNT_NAIRA / 2) + 226
-      : slots?.totalAmountNaira ?? ISLAND_CAMP_AMOUNT_NAIRA + Math.ceil(452);
-  const feePay =
-    paymentPlan === "deposit"
-      ? slots?.depositFeeNaira ?? 226
-      : slots?.paystackFeeNaira ?? 452;
-  const balancePay = slots?.balanceTotalNaira ?? totalPay;
+  const fullTotal = slots?.totalAmountNaira ?? ISLAND_CAMP_AMOUNT_NAIRA + 452;
+  const fullFee = slots?.paystackFeeNaira ?? 452;
+  const depositTotal = slots?.depositTotalNaira ?? 11777;
+  const depositFee = slots?.depositFeeNaira ?? 277;
+  const balanceTotal = slots?.balanceTotalNaira ?? 11777;
+  const splitGrandTotal = depositTotal + balanceTotal;
+  const totalPay = paymentPlan === "deposit" ? depositTotal : fullTotal;
   const slotsConfirmed = slots?.slotsTaken ?? slots?.paid ?? 0;
 
   return (
@@ -185,10 +183,11 @@ export function IslandCampRegisterForm() {
                     />
                     <span className="font-medium text-ink">Pay in full</span>
                     <span className="mt-1 text-sm text-lagoon">
-                      ₦{(slots?.totalAmountNaira ?? totalPay).toLocaleString("en-NG")}
+                      ₦{fullTotal.toLocaleString("en-NG")}
                     </span>
                     <span className="mt-1 text-xs text-ink/45">
-                      One payment, fully confirmed
+                      ₦{ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")} + ₦
+                      {fullFee.toLocaleString("en-NG")} fee · one payment
                     </span>
                   </label>
                   <label
@@ -208,10 +207,17 @@ export function IslandCampRegisterForm() {
                     />
                     <span className="font-medium text-ink">50% deposit</span>
                     <span className="mt-1 text-sm text-lagoon">
-                      ₦{(slots?.depositTotalNaira ?? totalPay).toLocaleString("en-NG")} now
+                      ₦{depositTotal.toLocaleString("en-NG")} now
                     </span>
                     <span className="mt-1 text-xs text-ink/45">
-                      + ₦{balancePay.toLocaleString("en-NG")} balance by {closesLabel}
+                      ₦{(ISLAND_CAMP_AMOUNT_NAIRA / 2).toLocaleString("en-NG")}{" "}
+                      + ₦{depositFee.toLocaleString("en-NG")} fee · then ₦
+                      {balanceTotal.toLocaleString("en-NG")} balance by{" "}
+                      {closesLabel}
+                    </span>
+                    <span className="mt-1 text-xs text-ink/40">
+                      ~₦{splitGrandTotal.toLocaleString("en-NG")} total (two
+                      Paystack fees)
                     </span>
                   </label>
                 </div>
@@ -379,8 +385,12 @@ export function IslandCampRegisterForm() {
               <p className="font-display mt-2 text-2xl text-lagoon sm:text-3xl">
                 ₦{ISLAND_CAMP_AMOUNT_NAIRA.toLocaleString("en-NG")}
               </p>
-              <p className="mt-1 text-xs text-ink/45">
-                + ~₦{feePay.toLocaleString("en-NG")} Paystack fee
+              <p className="mt-1 text-xs leading-relaxed text-ink/45">
+                Pay in full: ₦{fullTotal.toLocaleString("en-NG")} (₦
+                {fullFee.toLocaleString("en-NG")} fee)
+                <br />
+                50% deposit: ₦{depositTotal.toLocaleString("en-NG")} + ₦
+                {balanceTotal.toLocaleString("en-NG")} balance
               </p>
             </div>
           </div>
